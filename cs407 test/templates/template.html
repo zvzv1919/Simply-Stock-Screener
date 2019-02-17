@@ -1,0 +1,20 @@
+<!doctype html>
+
+<title>Test</title> 
+<meta charset=utf-8> 
+
+<a href="{{ url_for('list_stocks') }}">List Stocks</a>
+
+
+<p>Add Stock:</p>
+<form action="{{ url_for('add_stock') }}" method="POST">
+    <input name="text">
+    <input type="submit">
+</form>
+
+<p>Search Stock by Price(low,high):</p>
+<form action="{{ url_for('search_stocks') }}" method="POST">
+    <input name="text">
+    <input type="submit">
+</form>
+
