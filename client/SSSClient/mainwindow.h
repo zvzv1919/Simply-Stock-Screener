@@ -19,6 +19,7 @@ public:
 public slots:
     void viewStockDetails(QListWidgetItem * stock);
     void search();
+    void updateDatabase();
     void switchToSingleView();
     void switchToListView();
 

@@ -71,6 +71,10 @@ void MainWindow::search() {
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
 
+void MainWindow::updateDatabase() {
+    // TODO: Fork thread to submit update database request
+}
+
 void MainWindow::switchToSingleView() {
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }

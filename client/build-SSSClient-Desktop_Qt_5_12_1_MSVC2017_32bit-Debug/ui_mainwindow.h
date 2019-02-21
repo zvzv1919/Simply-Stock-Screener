@@ -21,7 +21,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTableWidget>
@@ -48,7 +50,7 @@ public:
     QWidget *scrollAreaWidgetContents_2;
     QVBoxLayout *verticalLayout_2;
     QTextEdit *stockname;
-    QGroupBox *groupBox;
+    QGroupBox *currentdatatablebox;
     QHBoxLayout *horizontalLayout;
     QTableWidget *currentdatatable1;
     QTableWidget *currentdatatable2;
@@ -61,6 +63,10 @@ public:
     QLineEdit *searchbar;
     QTextEdit *textEdit;
     QGroupBox *sidebargroupbox;
+    QVBoxLayout *verticalLayout;
+    QTextEdit *textEdit_2;
+    QPushButton *updatebutton;
+    QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QMenu *menuDebug;
     QToolBar *mainToolBar;
@@ -103,7 +109,7 @@ public:
         singleviewscrollarea->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 1006, 473));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 1017, 473));
         scrollAreaWidgetContents_2->setAutoFillBackground(false);
         scrollAreaWidgetContents_2->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_2 = new QVBoxLayout(scrollAreaWidgetContents_2);
@@ -127,13 +133,13 @@ public:
 
         verticalLayout_2->addWidget(stockname);
 
-        groupBox = new QGroupBox(scrollAreaWidgetContents_2);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        horizontalLayout = new QHBoxLayout(groupBox);
+        currentdatatablebox = new QGroupBox(scrollAreaWidgetContents_2);
+        currentdatatablebox->setObjectName(QString::fromUtf8("currentdatatablebox"));
+        horizontalLayout = new QHBoxLayout(currentdatatablebox);
         horizontalLayout->setSpacing(6);
         horizontalLayout->setContentsMargins(11, 11, 11, 11);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        currentdatatable1 = new QTableWidget(groupBox);
+        currentdatatable1 = new QTableWidget(currentdatatablebox);
         if (currentdatatable1->columnCount() < 2)
             currentdatatable1->setColumnCount(2);
         if (currentdatatable1->rowCount() < 7)
@@ -165,7 +171,7 @@ public:
 
         horizontalLayout->addWidget(currentdatatable1);
 
-        currentdatatable2 = new QTableWidget(groupBox);
+        currentdatatable2 = new QTableWidget(currentdatatablebox);
         if (currentdatatable2->columnCount() < 2)
             currentdatatable2->setColumnCount(2);
         if (currentdatatable2->rowCount() < 6)
@@ -202,7 +208,7 @@ public:
         horizontalLayout->setStretch(0, 1);
         horizontalLayout->setStretch(1, 1);
 
-        verticalLayout_2->addWidget(groupBox);
+        verticalLayout_2->addWidget(currentdatatablebox);
 
         singleviewscrollarea->setWidget(scrollAreaWidgetContents_2);
 
@@ -285,8 +291,31 @@ public:
         sidebargroupbox = new QGroupBox(centralWidget);
         sidebargroupbox->setObjectName(QString::fromUtf8("sidebargroupbox"));
         sidebargroupbox->setBaseSize(QSize(0, 0));
+        verticalLayout = new QVBoxLayout(sidebargroupbox);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        textEdit_2 = new QTextEdit(sidebargroupbox);
+        textEdit_2->setObjectName(QString::fromUtf8("textEdit_2"));
+        textEdit_2->setMinimumSize(QSize(150, 100));
+        textEdit_2->setStyleSheet(QString::fromUtf8(" background-color: rgba(0, 0, 0, 0);border: transparent;"));
 
-        gridLayout->addWidget(sidebargroupbox, 2, 0, 1, 1);
+        verticalLayout->addWidget(textEdit_2);
+
+        updatebutton = new QPushButton(sidebargroupbox);
+        updatebutton->setObjectName(QString::fromUtf8("updatebutton"));
+
+        verticalLayout->addWidget(updatebutton);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addItem(verticalSpacer);
+
+        verticalLayout->setStretch(0, 2);
+        verticalLayout->setStretch(1, 1);
+        verticalLayout->setStretch(2, 9);
+
+        gridLayout->addWidget(sidebargroupbox, 1, 0, 2, 2);
 
         gridLayout->setRowStretch(1, 1);
         gridLayout->setRowStretch(2, 5);
@@ -315,6 +344,7 @@ public:
         QObject::connect(actionListview, SIGNAL(triggered()), MainWindow, SLOT(switchToListView()));
         QObject::connect(resultslist, SIGNAL(itemClicked(QListWidgetItem*)), MainWindow, SLOT(viewStockDetails(QListWidgetItem*)));
         QObject::connect(searchbar, SIGNAL(returnPressed()), MainWindow, SLOT(search()));
+        QObject::connect(updatebutton, SIGNAL(clicked()), MainWindow, SLOT(updateDatabase()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -331,7 +361,7 @@ public:
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:24pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;\"><br /></p></body></html>", nullptr));
         stockname->setPlaceholderText(QApplication::translate("MainWindow", "Stockname Goes Here", nullptr));
-        groupBox->setTitle(QString());
+        currentdatatablebox->setTitle(QString());
         searchresults->setPlaceholderText(QApplication::translate("MainWindow", "Search Results for:", nullptr));
         searchbargroupbox->setTitle(QString());
         textEdit->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -340,6 +370,12 @@ public:
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Search for a single stock, or specify criterea to search for</span></p></body></html>", nullptr));
         sidebargroupbox->setTitle(QString());
+        textEdit_2->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt;\">Welcome to Simply Stock Screener!</span></p></body></html>", nullptr));
+        updatebutton->setText(QApplication::translate("MainWindow", "Update Database", nullptr));
         menuDebug->setTitle(QApplication::translate("MainWindow", "Debug", nullptr));
     } // retranslateUi
 
