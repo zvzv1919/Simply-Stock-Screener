@@ -132,4 +132,9 @@ def graph(stock_symbol,  timeframe):
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
 
-
+# Takes a search query and searches the database
+def search(query):
+    # Parse query to get price info - Xuan
+    # Retrieve list from database matching price info - Brian
+    # print results - Xuan
+    
