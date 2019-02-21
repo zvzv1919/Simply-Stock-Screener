@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QProcess>
+#include <QtDebug>
+#include <QFileinfo>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -39,6 +43,12 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     QString stockstring = stock->text();
 
     // TODO: Fork thread to perform search
+    QProcess p;
+    QString path = QFileInfo(".").absolutePath();
+    QStringList params;
+    path += "/../backend.py";
+    params << path;
+    p.start("python", params);
 
     // Prepare data screen
     ui->stockname->setText(stockstring);
@@ -50,6 +60,13 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     }
 
     // TODO: await thread return and fill table with data
+    if(!p.waitForFinished(-1)) {
+        qDebug() << "Error with process";
+    }
+    else {
+        QString poutput = p.readAllStandardOutput();
+        qDebug() << poutput;
+    }
 
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }

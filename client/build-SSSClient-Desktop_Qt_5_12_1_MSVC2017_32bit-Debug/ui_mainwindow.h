@@ -109,7 +109,7 @@ public:
         singleviewscrollarea->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 1017, 473));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 1008, 438));
         scrollAreaWidgetContents_2->setAutoFillBackground(false);
         scrollAreaWidgetContents_2->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_2 = new QVBoxLayout(scrollAreaWidgetContents_2);
@@ -123,7 +123,7 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(stockname->sizePolicy().hasHeightForWidth());
         stockname->setSizePolicy(sizePolicy);
-        stockname->setMinimumSize(QSize(0, 50));
+        stockname->setMinimumSize(QSize(0, 60));
         stockname->setMaximumSize(QSize(16777215, 50));
         QFont font;
         font.setPointSize(24);
@@ -273,7 +273,7 @@ public:
         textEdit->setObjectName(QString::fromUtf8("textEdit"));
         sizePolicy1.setHeightForWidth(textEdit->sizePolicy().hasHeightForWidth());
         textEdit->setSizePolicy(sizePolicy1);
-        textEdit->setMinimumSize(QSize(400, 10));
+        textEdit->setMinimumSize(QSize(475, 60));
         textEdit->setMaximumSize(QSize(450, 45));
         textEdit->setSizeIncrement(QSize(0, 0));
         textEdit->setBaseSize(QSize(0, 0));
@@ -297,7 +297,7 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         textEdit_2 = new QTextEdit(sidebargroupbox);
         textEdit_2->setObjectName(QString::fromUtf8("textEdit_2"));
-        textEdit_2->setMinimumSize(QSize(150, 100));
+        textEdit_2->setMinimumSize(QSize(185, 130));
         textEdit_2->setStyleSheet(QString::fromUtf8(" background-color: rgba(0, 0, 0, 0);border: transparent;"));
 
         verticalLayout->addWidget(textEdit_2);
@@ -324,7 +324,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1274, 21));
+        menuBar->setGeometry(QRect(0, 0, 1274, 26));
         menuDebug = new QMenu(menuBar);
         menuDebug->setObjectName(QString::fromUtf8("menuDebug"));
         MainWindow->setMenuBar(menuBar);
@@ -367,13 +367,13 @@ public:
         textEdit->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Search for a single stock, or specify criterea to search for</span></p></body></html>", nullptr));
         sidebargroupbox->setTitle(QString());
         textEdit_2->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt;\">Welcome to Simply Stock Screener!</span></p></body></html>", nullptr));
         updatebutton->setText(QApplication::translate("MainWindow", "Update Database", nullptr));
         menuDebug->setTitle(QApplication::translate("MainWindow", "Debug", nullptr));
