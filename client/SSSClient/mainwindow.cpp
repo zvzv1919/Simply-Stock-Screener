@@ -42,13 +42,14 @@ MainWindow::~MainWindow()
 void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     QString stockstring = stock->text();
 
-    // TODO: Fork thread to perform search
+    // Create process to perform search
     QProcess p;
     QString path = QFileInfo(".").absolutePath();
     QStringList params;
     path += "/../backend.py";
-    params << path;
-    p.start("python", params);
+    qDebug() << path;
+    params << path << "single" << stockstring;
+    p.start("python.exe", params);
 
     // Prepare data screen
     ui->stockname->setText(stockstring);
@@ -59,13 +60,14 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
         ui->currentdatatable2->setItem(i,1, nullptr);
     }
 
-    // TODO: await thread return and fill table with data
+    // Await process return and fill table with data -
     if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
     }
     else {
-        QString poutput = p.readAllStandardOutput();
+        QString poutput(p.readAllStandardOutput());
         qDebug() << poutput;
+        ui->currentdatatable1->setItem(0,1,new QTableWidgetItem(poutput));
     }
 
     ui->pageswitcher->setCurrentWidget(ui->singleview);
