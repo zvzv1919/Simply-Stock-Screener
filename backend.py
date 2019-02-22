@@ -54,13 +54,11 @@ import sys
 # with open('out.csv', 'w') as f:
 #     writer = csv.writer(f)
 #     reader = csv.reader(data.text.splitlines())
-#
 #     for row in reader:
 #         print row[0]
 
 # a list holding all company symbols
 company_list=[]
-
 # update the database
 """def update():
     with open('companylist.csv') as csv_file:
@@ -160,7 +158,7 @@ def search(query):
 def main():
     #test driver
     print ""
-    get_daily("AAL")
+    get_daily("F")
     graph("AAL", "1 month")
     # control statement
     if len(sys.argv) < 3:
