@@ -51,6 +51,9 @@ import mysql.connector
 # # print(body3[:10000])
 
 
+
+
+
 # with open('out.csv', 'w') as f:
 #     writer = csv.writer(f)
 #     reader = csv.reader(data.text.splitlines())
@@ -93,7 +96,6 @@ now=datetime.datetime.now()
         print row
 """
 
-
 # Get stock info (current day)
 def get_current(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
@@ -101,10 +103,9 @@ def get_current(stock_symbol):
     data = requests.get(request)
     return data
 
-
 # Get stock info (daily price over time)
 def get_daily(stock_symbol):
-    # api request to retrieve daily price - Xuan
+    #api request to retrieve daily price - Xuan
     """data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
                     'apikey=PTF07M1M1UTX6RCF&datatype=csv')
     """
@@ -116,64 +117,52 @@ def get_daily(stock_symbol):
     return data
 
     # update database with price for each day - Brian
-    # call add_stock
-
-
-def add_stock(row):
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
-    # print ("writing to db")
-    cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]])
-    # print ("wrote to db")
-    conn.commit();
-    conn.close();
-    # return processed_text
-
+	#call add_stock
+	
+def add_stock(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient):
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
+	#print ("writing to db")
+	cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
+	#print ("wrote to db")
+	conn.commit();
+	conn.close();
+	#return processed_text
 
 def get_stock(ticker):
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
 
-    cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
-    data = cursor.fetchall()
-    for row in data:
-        print (row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+	cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
+	data = cursor.fetchall() 
+	for row in data:
+		print (row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
 
-    conn.commit();
-    conn.close();
+	conn.commit();
+	conn.close();
 
-
-# Retrieve current data for single stock, return it to be displayed, and
-# update database with historical daily price info
+# Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
 def singlestock(stock_symbol):
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
-    # print (stock_symbol)
-    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s", [stock_symbol])
-    # gets the number of rows affected by the command executed
-    data = cursor.fetchall()
-    count = 0
-    for row in data:
-        count += 1
-    if count == 0:
-        # add the stock to database
-        row_count=0
-        data = get_daily(stock_symbol)
-        reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            if row_count != 0:
-                row = [stock_symbol] + row
-                add_stock(row)
-            row_count += 1
-    else:
-        data = get_current(stock_symbol)
-        reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            print row
 
-    #     print "It Does Not Exist"
-    # else:
-    #     print "It Does Exist"
+	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
+	print (stock_symbol)
+	cursor.execute("SELECT * FROM Stocks WHERE ticker = %s",[stock_symbol])
+	# gets the number of rows affected by the command executed
+	data = cursor.fetchall()
+	count = 0
+	
+	for row in data:
+		print (row[0])	
+		count = count + 1
+	if count == 0:
+		print "It does not exist"
+	else:
+		print "It does exist"
+	#
+	#print "It Does Not Exist"
+	#else:
+	#	print "It Does Exist"
 	# if data does not already exist in database - Brian
 	#get_daily(stock_symbol)
 	# get_current(stock_symbol)?
@@ -183,17 +172,19 @@ def singlestock(stock_symbol):
 	# print current data - Xuan
 
     # if data does not already exist in database - Brian
-
+        data=get_daily(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        #for row in reader:
+            #print row
 
         # get_current(stock_symbol)?
         # print current - Xuan
     # else
-    #     data=get_current(stock_symbol)
-    #     reader = csv.reader(data.text.splitlines())
-    #     for row in reader:
-    #         print row
+        data=get_current(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        for row in reader:
+            print row
         # print current data - Xuan
-
 
 def extractDate(date, component):
     # print date.month
@@ -207,19 +198,17 @@ def extractDate(date, component):
         print "invalid component of date"
 
 # Return price points for graph
-
-
 def graph(stock_symbol,  timeframe):
-    max_count=60    # doesn't work for 'all'
+    max_count=60    #doesn't work for 'all'
 
     conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test', database='stock_info',
                                    auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
     cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [stock_symbol])
-    data = cursor.fetchall() # raw data from database
+    data = cursor.fetchall() #raw data from database
 
-    plot_data=[]    # datapoints to be plotted, formatted as[[date, price]]
+    plot_data=[]    #datapoints to be plotted, formatted as[[date, price]]
     if timeframe=='1 month':
         count=0
         for row in data:
@@ -304,7 +293,7 @@ def search(query):
 
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    cursor.execute(' SELECT * FROM stocks WHERE timestamp =(SELECT MAX(timestamp) FROM stocks WHERE %s < close AND %s > close) Order BY close'
+    cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
                    , [low, high])
 
     # fetch all of the rows from the query
@@ -329,7 +318,7 @@ def main():
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
     #graph("AAL", "1 month")
-    search("2,11")
+    #search("1,4")
     # print "Current date and time using instance attributes:"
     # print "Current year: %d" % now.year
     # print "Current month: %d" % now.month
@@ -341,7 +330,6 @@ def main():
 
 
     # graph("RAT", "1 month")
-    singlestock("AAL")
     # control statement
     if len(sys.argv) < 3:
         print "format error"
