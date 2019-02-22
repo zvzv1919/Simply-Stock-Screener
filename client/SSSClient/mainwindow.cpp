@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ticker = "";
+
     // Set up initial data table
     ui->currentdatatable1->setItem(0,0, new QTableWidgetItem("Current Price:"));
     ui->currentdatatable2->setItem(0,0, new QTableWidgetItem("Change:"));
@@ -64,6 +66,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     QString stockstring = stock->text();
+    ticker = stockstring;
 
     // Create process to retrieve data
     QProcess p;
@@ -168,20 +171,42 @@ void MainWindow::updateDatabase() {
     // TODO: Fork thread to submit update database request
 }
 
-void MainWindow::switchToOneMonth() {
+void MainWindow::graph(QString timeframe) {
 
+    // Create process to retrieve data
+    QProcess p;
+    QString path = QFileInfo(".").absolutePath();
+    QStringList params;
+    path += "/../backend.py";
+    params << path << "graph" << ticker << timeframe;
+    p.start("python.exe", params);
+
+    // TODO: clear graph
+    // Await process return and fill list with data
+    if(!p.waitForFinished(-1)) {
+        qDebug() << "Error with process";
+        return;
+    }
+    QString poutput(p.readAllStandardOutput());
+    qDebug() << poutput;
+
+    // TODO: Plot graph here
+}
+
+void MainWindow::switchToOneMonth() {
+    graph("1 month");
 }
 
 void MainWindow::switchToSixMonths() {
-
+    graph("6 month");
 }
 
 void MainWindow::switchToOneYear() {
-
+    graph("1 year");
 }
 
 void MainWindow::switchToAllTime() {
-
+    graph("all");
 }
 
 void MainWindow::switchToSingleView() {
