@@ -75,7 +75,6 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     path += "/../backend.py";
     params << path << "single" << stockstring;
     p.start("python.exe", params);
-
     // Prepare data screen
     ui->stockname->setText("");
     for(int i = 0; i < ui->currentdatatable1->rowCount(); i++) {
@@ -93,6 +92,7 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
         return;
     }
     QString poutput(p.readAllStandardOutput());
+
     qDebug() << poutput;
 
     if(poutput.compare("\r\n[\'{}\']\r\n") == 0) {
@@ -100,13 +100,14 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
         ui->pageswitcher->setCurrentWidget(ui->singleview);
         return;
     }
-
     int ind = poutput.indexOf('[');
     ind = poutput.indexOf('[', ind+1);
     poutput = poutput.mid(ind+1, poutput.length() - ind - 1 - 3);
     poutput = poutput.remove('\'');
     QStringList datalist = poutput.split(", ");
+    qDebug() << "4";
     ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(datalist[4]));
+
     ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(datalist[8] + " (" + datalist[9] + ")"));
 
     ui->currentdatatable1->setItem(2,1, new QTableWidgetItem(datalist[1]));
@@ -124,10 +125,12 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 void MainWindow::search() {
     QString query = ui->searchbar->text();
     ui->searchbar->clear();
-
+    qDebug() << "1";
     // Check if search is for single stock or list
     if(query.isUpper()) {
-        QListWidgetItem stock(query);   // Deleted upon return from this function - Be careful with asynchronization
+        qDebug() << "2";
+        QListWidgetItem stock(query);
+        qDebug() << "3";// Deleted upon return from this function - Be careful with asynchronization
         viewStockDetails(&stock);
         return;
     }
@@ -186,6 +189,7 @@ void MainWindow::graph(QString timeframe) {
     params << path << "graph" << ticker << timeframe;
     p.start("python.exe", params);
 
+    clearGraph();
     // TODO: clear graph
     // Await process return and fill list with data
     if(!p.waitForFinished(-1)) {
@@ -222,7 +226,7 @@ void MainWindow::switchToListView() {
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
 
-void MainWindow::updateGraph(float high, float low){
+void MainWindow::clearGraph(){
     QLineSeries *series = new QLineSeries();
     QChart *chart = new QChart();
     QValueAxis *uaxisX =new QValueAxis;
@@ -232,7 +236,7 @@ void MainWindow::updateGraph(float high, float low){
         uaxisX->setMinorTickCount(5);
 
      QValueAxis *uaxisY=new QValueAxis;
-        uaxisY->setRange(-5,10);
+        uaxisY->setRange(-10,10);
         uaxisY->setGridLineVisible(true);
         uaxisY->setTickCount(6);
         uaxisY->setMinorTickCount(2);
@@ -246,5 +250,9 @@ void MainWindow::updateGraph(float high, float low){
             chart->setTitleFont(*graphTitle);
             chart->setTitle("Current Price: ");
             ui->currentQcharts->setChart(chart);
+}
+
+void MainWindow::updateGraph(){
+
 }
 

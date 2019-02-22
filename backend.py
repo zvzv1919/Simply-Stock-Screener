@@ -304,7 +304,7 @@ def search(query):
 
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
+    cursor.execute(' SELECT * FROM stocks WHERE timestamp =(SELECT MAX(timestamp) FROM stocks WHERE %s < close AND %s > close) Order BY close'
                    , [low, high])
 
     # fetch all of the rows from the query
@@ -329,7 +329,7 @@ def main():
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
     #graph("AAL", "1 month")
-    #search("1,4")
+    search("2,11")
     # print "Current date and time using instance attributes:"
     # print "Current year: %d" % now.year
     # print "Current month: %d" % now.month
