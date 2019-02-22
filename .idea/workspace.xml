@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8416176c-d5a0-458e-bca5-bed5e9f0e407" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,8 +27,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="328" column="14" selection-start-line="328" selection-start-column="14" selection-end-line="328" selection-end-column="14" />
+            <state relative-caret-position="115">
+              <caret line="329" selection-start-line="329" selection-end-line="329" />
               <folding>
                 <element signature="e#21#50#0" expanded="true" />
               </folding>
@@ -58,6 +57,11 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>get_stock</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -192,19 +196,32 @@
       <option name="project" value="LOCAL" />
       <updated>1550813627641</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fiished graph(). (can't connect to database so no test)">
+      <created>1550819771638</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1550819771638</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fiished graph(). and done simple test and works">
+      <created>1550821062717</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1550821062717</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="11" y="52" width="1090" height="777" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29373246" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.29373246" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.329927" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -224,7 +241,9 @@
     <MESSAGE value="Implementation on some of the functions and code structure change" />
     <MESSAGE value="changed code structure of singlestock and functions it calls to make them consistent" />
     <MESSAGE value="Implemented graph()." />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented graph()." />
+    <MESSAGE value="Fiished graph(). (can't connect to database so no test)" />
+    <MESSAGE value="Fiished graph(). and done simple test and works" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fiished graph(). and done simple test and works" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/client/build-SSSClient-Desktop_Qt_5_12_1_MSVC2017_32bit-Debug/Makefile.Debug" />
@@ -236,9 +255,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/client/SSSClient/main.cpp">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/SSSClient/mainwindow.cpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
@@ -257,10 +273,13 @@
     <entry file="file://$PROJECT_DIR$/companylist.csv">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/mainwindow.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/backend.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="328" column="14" selection-start-line="328" selection-start-column="14" selection-end-line="328" selection-end-column="14" />
+        <state relative-caret-position="115">
+          <caret line="329" selection-start-line="329" selection-end-line="329" />
           <folding>
             <element signature="e#21#50#0" expanded="true" />
           </folding>

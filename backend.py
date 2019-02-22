@@ -329,7 +329,7 @@ def main():
     # print "Current microsecond: %d" % now.microsecond
 
 
-    graph("CAT", "1 year")
+    # graph("RAT", "1 month")
     # control statement
     if len(sys.argv) < 3:
         print "format error"
