@@ -3,7 +3,7 @@
 
 #include <QProcess>
 #include <QtDebug>
-#include <QFileinfo>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,12 +42,11 @@ MainWindow::~MainWindow()
 void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     QString stockstring = stock->text();
 
-    // Create process to perform search
+    // Create process to retrieve data
     QProcess p;
     QString path = QFileInfo(".").absolutePath();
     QStringList params;
     path += "/../backend.py";
-    qDebug() << path;
     params << path << "single" << stockstring;
     p.start("python.exe", params);
 
@@ -77,14 +76,36 @@ void MainWindow::search() {
     QString query = ui->searchbar->text();
     ui->searchbar->clear();
 
-    // TODO: Fork thread to perform search
+    // Check if search is for single stock or list
+    if(query.isUpper()) {
+        QListWidgetItem stock(query);   // Deleted upon return from this function - Be careful with asynchronization
+        viewStockDetails(&stock);
+        return;
+    }
+
+    // Create thread to perform search
+    QProcess p;
+    QString path = QFileInfo(".").absolutePath();
+    QStringList params;
+    path += "/../backend.py";
+    params << path << "search" << query;
+    p.start("python.exe", params);
 
     // Prepare searching screen
     ui->searchresults->setText("Searching...");
     ui->resultslist->clear();
 
-    // TODO: await thread return and fill table with data
-    ui->searchresults->setText("Search Results for: " + query);
+    // Await process return and fill list with data
+    if(!p.waitForFinished(-1)) {
+        qDebug() << "Error with process";
+    }
+    else {
+        QString poutput(p.readAllStandardOutput());
+        qDebug() << poutput;
+        ui->searchresults->setText("Search Results for: " + query);
+        ui->resultslist->addItem(poutput);
+    }
+
 
 
     ui->pageswitcher->setCurrentWidget(ui->listview);
