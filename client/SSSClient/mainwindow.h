@@ -22,6 +22,10 @@ public slots:
     void updateDatabase();
     void switchToSingleView();
     void switchToListView();
+    void switchToOneMonth();
+    void switchToSixMonths();
+    void switchToOneYear();
+    void switchToAllTime();
 
 private:
     Ui::MainWindow *ui;

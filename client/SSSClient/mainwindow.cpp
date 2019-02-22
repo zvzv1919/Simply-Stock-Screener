@@ -115,6 +115,22 @@ void MainWindow::updateDatabase() {
     // TODO: Fork thread to submit update database request
 }
 
+void MainWindow::switchToOneMonth() {
+
+}
+
+void MainWindow::switchToSixMonths() {
+
+}
+
+void MainWindow::switchToOneYear() {
+
+}
+
+void MainWindow::switchToAllTime() {
+
+}
+
 void MainWindow::switchToSingleView() {
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }
