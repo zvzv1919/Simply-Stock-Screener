@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
         axisX->setMinorTickCount(5);
 
      QValueAxis *axisY=new QValueAxis;
-            axisY->setRange(-5,10);
+            axisY->setRange(-10,10);
             axisY->setGridLineVisible(true);
             axisY->setTickCount(6);
             axisY->setMinorTickCount(2);
@@ -190,7 +190,7 @@ void MainWindow::switchToListView() {
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
 
-void MainWindow::updateGraph(){
+void MainWindow::updateGraph(float high, float low){
     QLineSeries *series = new QLineSeries();
     QChart *chart = new QChart();
     QValueAxis *uaxisX =new QValueAxis;

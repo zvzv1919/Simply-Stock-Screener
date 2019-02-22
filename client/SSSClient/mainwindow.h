@@ -29,7 +29,7 @@ public slots:
     void switchToSixMonths();
     void switchToOneYear();
     void switchToAllTime();
-    void updateGraph();
+    void updateGraph(float high,float low);
 private:
     Ui::MainWindow *ui;
 
