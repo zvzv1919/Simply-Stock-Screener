@@ -120,17 +120,17 @@ def get_daily(stock_symbol):
 	#call add_stock
 	
 def add_stock(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient):
-	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	#print ("writing to db")
-	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
+	cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
 	#return processed_text
 
 def get_stock(ticker):
-	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 
 	cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
@@ -187,12 +187,13 @@ def singlestock(stock_symbol):
         # print current data - Xuan
 
 def extractDate(date, component):
+    # print date.month
     if component=='YEAR':
-        return int(date[0:4])
+        return date.year
     elif component=='MONTH':
-        return int(date[5:7])
+        return date.month
     elif component=='DAY':
-        return int(date[8:10])
+        return date.day
     else:
         print "invalid component of date"
 
@@ -200,7 +201,7 @@ def extractDate(date, component):
 def graph(stock_symbol,  timeframe):
     max_count=60    #doesn't work for 'all'
 
-    conn = mysql.connector.connect(host='192.168.1.134', user='test', password='cs407test', database='stock_info',
+    conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test', database='stock_info',
                                    auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
@@ -211,8 +212,8 @@ def graph(stock_symbol,  timeframe):
     if timeframe=='1 month':
         count=0
         for row in data:
-            day=extractDate(row[0], 'DAY')
-            month=extractDate(row[0], 'MONTH')
+            day=extractDate(row[1], 'DAY')
+            month=extractDate(row[1], 'MONTH')
             if day < now.day and month < now.month and now.month > 1 \
                     or day < now.day and month == 12 and now.month == 1 \
                     or month < now.month - 2\
@@ -220,7 +221,7 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count:
                 break
             else:
-                plot_data.add(row[1], row[5])
+                plot_data.append([row[1], row[5]])
                 count +=1
         # print '1 month'
         # take a point every day for 1 month
@@ -229,8 +230,8 @@ def graph(stock_symbol,  timeframe):
         count = 0
         prevday=-2
         for row in data:
-            day=extractDate(row[0], 'DAY')
-            month=extractDate(row[0], 'MONTH')
+            day=extractDate(row[1], 'DAY')
+            month=extractDate(row[1], 'MONTH')
             if day < now.day and month < now.month - 5 and now.month > 6 \
                     or day < now.day and month < now.month + 7 and month > now.month and now.month <=6 \
                     or now.month > 7 and month < now.month - 6 \
@@ -239,7 +240,7 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count or abs(day-prevday)==1:
                 break
             else:
-                plot_data.add(row[1], row[5])
+                plot_data.append([row[1], row[5]])
                 count+=1
                 prevday=day
     elif timeframe=='1 year':
@@ -247,27 +248,27 @@ def graph(stock_symbol,  timeframe):
         count = 0
         prevday = -2
         for row in data:
-            day = extractDate(row[0], 'DAY')
-            month = extractDate(row[0], 'MONTH')
-            year = extractDate(row[0], 'YEAR')
+            day = extractDate(row[1], 'DAY')
+            month = extractDate(row[1], 'MONTH')
+            year = extractDate(row[1], 'YEAR')
             if day < now.day and month == now.month and year < now.year \
                     or month < now.month and year < now.year and now.month > 1\
                     or month <= 12 and now.month == 1 and year < now.year\
                     or count >= max_count or abs(day - prevday) == 1:
                 break
             else:
-                plot_data.add(row[1], row[5])
+                plot_data.append([row[1], row[5]])
                 count += 1
                 prevday = day
     elif timeframe=='all':
         count = 0
         prevmonth = 0
         for row in data:
-            month = extractDate(row[0], 'MONTH')
+            month = extractDate(row[1], 'MONTH')
             if month == prevmonth:
                 break
             else:
-                plot_data.add(row[1], row[5])
+                plot_data.append([row[1], row[5]])
                 count += 1
                 prevmonth = month
         # print 'all'
@@ -290,7 +291,7 @@ def search(query):
     # Open database connection
 	
 
-    conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
                    , [low, high])
@@ -312,6 +313,7 @@ def search(query):
 
 
 def main():
+	#search('9.5,11')
     #test driver
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
@@ -326,23 +328,23 @@ def main():
     # print "Current second: %d" % now.second
     # print "Current microsecond: %d" % now.microsecond
 
-    graph("CAT", "1 year")
+
+    # graph("RAT", "1 month")
     # control statement
     if len(sys.argv) < 3:
         print "format error"
         exit(1)
-    if sys.argv[1] == "single":
-        singlestock(sys.argv[2])
-    elif sys.argv[1] == "search":
-        search(sys.argv[2])
-    elif sys.argv[1] == "graph":
-        if len(sys.argv) < 4:
-            print "format error"
-            exit(1)
+	if sys.argv[1] == "single":
+		singlestock(sys.argv[2])
+	elif sys.argv[1] == "search":
+		search(sys.argv[2])
+	elif sys.argv[1] == "graph":
+		if len(sys.argv) < 4:
+			print "format error"
+			exit(1)
         graph(sys.argv[2], sys.argv[3])
-    else:
-        print "format error"
-        exit(1)
+	print "format error"
+
 
 
 if __name__ == '__main__':
