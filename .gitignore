@@ -1,0 +1,3 @@
+/client/SSSclient/*.pro.user
+/client/*-Debug/
+/client/*-Release/
