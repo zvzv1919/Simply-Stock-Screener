@@ -119,11 +119,11 @@ def get_daily(stock_symbol):
     # update database with price for each day - Brian
 	#call add_stock
 	
-def add_stock(name , symbol, low, high , date):
+def add_stock(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient):
 	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	#print ("writing to db")
-	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s)", [name , symbol, low, high , date])
+	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
