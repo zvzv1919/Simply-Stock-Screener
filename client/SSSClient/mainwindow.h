@@ -29,7 +29,7 @@ public slots:
     void switchToOneYear();
     void switchToAllTime();
     void clearGraph();
-    void updateGraph();
+    void updateGraphPoint(double time, double price, QLineSeries* ss);
 private:
     Ui::MainWindow *ui;
     void graph(QString timeframe);

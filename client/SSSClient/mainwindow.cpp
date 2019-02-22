@@ -51,10 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
      chart->legend()->hide();
      chart->createDefaultAxes();
 
-     QFont *graphTitle= new QFont();
-     graphTitle->setItalic(true);
-     chart->setTitleFont(*graphTitle);
-     chart->setTitle("Current Price: ");
+     chart->setTitle("Stock Price");
      ui->currentQcharts->setChart(chart);
      ui->currentQcharts->setRenderHint(QPainter::Antialiasing);
 }
@@ -199,7 +196,18 @@ void MainWindow::graph(QString timeframe) {
     QString poutput(p.readAllStandardOutput());
     qDebug() << poutput;
 
-    // TODO: Plot graph here
+
+    QLineSeries *sp = new QLineSeries();
+    QChart *newchart = new QChart();
+
+
+    updateGraphPoint(1,2,sp);
+    //TODO: Once get data,use a for loop to call UpdateGraphPoint() to plot sp
+    newchart->setTitle("Stock Price");
+    newchart->addSeries(sp);
+    newchart->createDefaultAxes();
+    ui->currentQcharts->setChart(newchart);
+
 }
 
 void MainWindow::switchToOneMonth() {
@@ -248,11 +256,11 @@ void MainWindow::clearGraph(){
             QFont *graphTitle= new QFont();
             graphTitle->setItalic(true);
             chart->setTitleFont(*graphTitle);
-            chart->setTitle("Current Price: ");
+            chart->setTitle("Stock Price");
             ui->currentQcharts->setChart(chart);
 }
 
-void MainWindow::updateGraph(){
-
+void MainWindow::updateGraphPoint(double time, double price, QLineSeries* ss){
+    ss->append(time,price);
 }
 
