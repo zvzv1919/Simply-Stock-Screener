@@ -5,13 +5,11 @@ import certifi
 import requests
 import csv
 import sys
-<<<<<<< HEAD
+
 import pymysql
 import requests
 import mysql.connector
-=======
 
->>>>>>> b18276fc0db1c46ad23b7203875007565c5bee72
 # buffer = StringIO()
 # c = pycurl.Curl()
 #
@@ -115,20 +113,7 @@ def get_daily(stock_symbol):
     """data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
                     'apikey=PTF07M1M1UTX6RCF&datatype=csv')
     """
-<<<<<<< HEAD
-    # update database with price for each day - Brian (call add_stock for each entry)
-	
-def add_stock(name , symbol, low, high , date):
-    conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss',
-                           database = 'stock_info',auth_plugin='mysql_native_password')
-	cursor = conn.cursor()
-	#print ("writing to db")
-	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s)", [name , symbol, low, high , date])
-	#print ("wrote to db")
-	conn.commit();
-	conn.close();
-	return processed_text
-=======
+
     request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
               'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
@@ -136,7 +121,18 @@ def add_stock(name , symbol, low, high , date):
     for row in reader:
         print row
     # update database with price for each day - Brian
->>>>>>> b18276fc0db1c46ad23b7203875007565c5bee72
+	#call add_stock
+	return
+	
+def add_stock(name , symbol, low, high , date):
+	conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
+	#print ("writing to db")
+	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s)", [name , symbol, low, high , date])
+	#print ("wrote to db")
+	conn.commit();
+	conn.close();
+	return processed_text
 
 
 
@@ -153,14 +149,27 @@ def singlestock(stock_symbol):
 
 # Return price points for graph
 def graph(stock_symbol,  timeframe):
-<<<<<<< HEAD
-	# Take time frame and grab 30 evenly-spaced data points - Xuan
-	# Retrieve those data points from database x30 - Brian
-	# print 30 data points - Xuan
-	# print "testgraph"
-	return
+
+    if timeframe=='1 month':
+        print '1 month'
+        # take a point every day for 1 month
+    elif timeframe=='3 month':
+        print "6 month"
+    elif timeframe=='3 year':
+        print '3 year'
+    elif timeframe=='all':
+        print 'all'
+    else:
+        print 'error'
+    # Take time frame and grab 30 evenly-spaced data points - Xuan
+    # Retrieve those data points from database x30 - Brian
+    # print 30 data points - Xuan
+    print "testgraph"
+
+
 # Takes a search query and searches the database
 def search(query):
+
     vals = query.split(',')
     low = float(vals[0])
     high = float(vals[1])
@@ -210,31 +219,7 @@ elif sys.argv[1] == "graph":
 else:
     print ("format error")
     exit(1)
-=======
-    if timeframe=='1 month':
-        print '1 month'
-        # take a point every day for 1 month
-    elif timeframe=='3 month':
-        print "6 month"
-    elif timeframe=='3 year':
-        print '3 year'
-    elif timeframe=='all':
-        print 'all'
-    else:
-        print 'error'
-    # Take time frame and grab 30 evenly-spaced data points - Xuan
-    # Retrieve those data points from database x30 - Brian
-    # print 30 data points - Xuan
-    print "testgraph"
 
-
-# Takes a search query and searches the database
-def search(query):
-
-    # Parse query to get price info - Xuan
-    # Retrieve list from database matching price info - Brian
-    # print results - Xuan
-    print "testsearch"
 
 def main():
     #test driver
@@ -257,7 +242,7 @@ def main():
     else:
         print "format error"
         exit(1)
->>>>>>> b18276fc0db1c46ad23b7203875007565c5bee72
+
 
 if __name__ == '__main__':
     main()
