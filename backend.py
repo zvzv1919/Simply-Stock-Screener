@@ -1,11 +1,10 @@
 #print "hello world"
 from StringIO import StringIO
-import pycurl
+# import pycurl
 import certifi
 import requests
 import csv
 import sys
-
 
 # buffer = StringIO()
 # c = pycurl.Curl()
@@ -97,13 +96,12 @@ company_list=[]
 
 # Get stock info (current day)
 def get_current(stock_symbol):
-    """request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
+    request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
               '&apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
     reader = csv.reader(data.text.splitlines())
     for row in reader:
         print row
-    """
 
 # Get stock info (daily price over time)
 def get_daily(stock_symbol):
@@ -111,7 +109,15 @@ def get_daily(stock_symbol):
     """data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
                     'apikey=PTF07M1M1UTX6RCF&datatype=csv')
     """
+    request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
+              'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
+    data = requests.get(request)
+    reader = csv.reader(data.text.splitlines())
+    for row in reader:
+        print row
     # update database with price for each day - Brian
+
+
 
 # Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
 def singlestock(stock_symbol):
@@ -126,38 +132,55 @@ def singlestock(stock_symbol):
 
 # Return price points for graph
 def graph(stock_symbol,  timeframe):
+    if timeframe=='1 month':
+        print '1 month'
+        # take a point every day for 1 month
+    elif timeframe=='3 month':
+        print "6 month"
+    elif timeframe=='3 year':
+        print '3 year'
+    elif timeframe=='all':
+        print 'all'
+    else:
+        print 'error'
     # Take time frame and grab 30 evenly-spaced data points - Xuan
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
     print "testgraph"
 
+
 # Takes a search query and searches the database
 def search(query):
+
     # Parse query to get price info - Xuan
     # Retrieve list from database matching price info - Brian
     # print results - Xuan
     print "testsearch"
 
-    
-    
-
-# control statement
-if len(sys.argv) < 3:
-    print "format error"
-    exit(1)
-if sys.argv[1] == "single":
-    singlestock(sys.argv[2])
-elif sys.argv[1] == "search":
-    search(sys.argv[2])
-elif sys.argv[1] == "graph":
-    if len(sys.argv) < 4:
+def main():
+    #test driver
+    print ""
+    get_daily("AAL")
+    graph("AAL", "1 month")
+    # control statement
+    if len(sys.argv) < 3:
         print "format error"
         exit(1)
-    graph(sys.argv[2], sys.argv[3])
-else:
-    print "format error"
-    exit(1)
+    if sys.argv[1] == "single":
+        singlestock(sys.argv[2])
+    elif sys.argv[1] == "search":
+        search(sys.argv[2])
+    elif sys.argv[1] == "graph":
+        if len(sys.argv) < 4:
+            print "format error"
+            exit(1)
+        graph(sys.argv[2], sys.argv[3])
+    else:
+        print "format error"
+        exit(1)
 
+if __name__ == '__main__':
+    main()
 # def get_historical_price(time_frame):
 #     if(time_frame=='')
 #get_current('AAL')
