@@ -2,6 +2,9 @@
 from StringIO import StringIO
 import pycurl
 import certifi
+import requests
+import csv
+import sys
 
 
 # buffer = StringIO()
@@ -45,18 +48,10 @@ import certifi
 # # body3 = buffer3.getvalue()
 # # print(body3[:10000])
 
-import requests
-import csv
 
-# control statement
 
-# def get_historical_price(time_frame):
-#     if(time_frame=='')
-#get_current('AAL')
 
-"""data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
-                    'apikey=PTF07M1M1UTX6RCF&datatype=csv')
-"""
+
 # with open('out.csv', 'w') as f:
 #     writer = csv.writer(f)
 #     reader = csv.reader(data.text.splitlines())
@@ -113,10 +108,13 @@ def get_current(stock_symbol):
 # Get stock info (daily price over time)
 def get_daily(stock_symbol):
     #api request to retrieve daily price - Xuan
+    """data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
+                    'apikey=PTF07M1M1UTX6RCF&datatype=csv')
+    """
     # update database with price for each day - Brian
 
 # Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
-def get_singlestock(stock_symbol):
+def singlestock(stock_symbol):
     # if data does not already exist in database - Brian
         get_daily(stock_symbol)
         # get_current(stock_symbol)?
@@ -131,10 +129,35 @@ def graph(stock_symbol,  timeframe):
     # Take time frame and grab 30 evenly-spaced data points - Xuan
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
+    print "testgraph"
 
 # Takes a search query and searches the database
 def search(query):
     # Parse query to get price info - Xuan
     # Retrieve list from database matching price info - Brian
     # print results - Xuan
+    print "testsearch"
+
     
+    
+
+# control statement
+if len(sys.argv) < 3:
+    print "format error"
+    exit(1)
+if sys.argv[1] == "single":
+    singlestock(sys.argv[2])
+elif sys.argv[1] == "search":
+    search(sys.argv[2])
+elif sys.argv[1] == "graph":
+    if len(sys.argv) < 4:
+        print "format error"
+        exit(1)
+    graph(sys.argv[2], sys.argv[3])
+else:
+    print "format error"
+    exit(1)
+
+# def get_historical_price(time_frame):
+#     if(time_frame=='')
+#get_current('AAL')
