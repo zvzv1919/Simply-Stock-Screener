@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a34533a2-217c-4786-918b-e1c667d3f4fc" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/client/SSSClient/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/client/SSSClient/mainwindow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/SSSClient/mainwindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/client/SSSClient/mainwindow.h" afterDir="false" />
+    <list default="true" id="8416176c-d5a0-458e-bca5-bed5e9f0e407" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/backend.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="backend.py" pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="515">
+              <caret line="92" column="26" selection-start-line="92" selection-end-line="92" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="158" column="8" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
+            <state relative-caret-position="-1316">
+              <caret line="201" column="27" lean-forward="true" selection-start-line="201" selection-start-column="27" selection-end-line="201" selection-end-column="27" />
               <folding>
                 <element signature="e#21#50#0" expanded="true" />
               </folding>
@@ -26,21 +36,78 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/companylist.csv">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/SSSClient/main.cpp">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/SSSClient/mainwindow.cpp">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/SSSClient/SSSClient.pro">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
     </leaf>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>graph</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/backend.py" />
+      </list>
+    </option>
+  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="36" />
-    <option name="y" value="40" />
-    <option name="width" value="2682" />
-    <option name="height" value="1584" />
+    <option name="x" value="-371" />
+    <option name="y" value="380" />
+    <option name="width" value="1090" />
+    <option name="height" value="777" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Simply-Stock-Screener" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Simply-Stock-Screener" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Simply-Stock-Screener" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Simply-Stock-Screener" type="462c0819:PsiDirectoryNode" />
+              <item name="client" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Simply-Stock-Screener" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Simply-Stock-Screener" type="462c0819:PsiDirectoryNode" />
+              <item name="client" type="462c0819:PsiDirectoryNode" />
+              <item name="SSSClient" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Simply-Stock-Screener" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Simply-Stock-Screener" type="462c0819:PsiDirectoryNode" />
+              <item name="cs407 test" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -75,6 +142,9 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
@@ -87,44 +157,109 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a34533a2-217c-4786-918b-e1c667d3f4fc" name="Default" comment="" />
-      <created>1550815077964</created>
+      <changelist id="8416176c-d5a0-458e-bca5-bed5e9f0e407" name="Default Changelist" comment="" />
+      <created>1550779356599</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1550815077964</updated>
+      <updated>1550779356599</updated>
     </task>
+    <task id="LOCAL-00001" summary="Implementation on some of the functions and code structure change">
+      <created>1550800607278</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1550800607278</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Implementation on some of the functions and code structure change">
+      <created>1550801683366</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1550801683366</updated>
+    </task>
+    <task id="LOCAL-00003" summary="changed code structure of singlestock and functions it calls to make them consistent">
+      <created>1550805407888</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1550805407888</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Implemented graph().">
+      <created>1550813627641</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1550813627641</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="18" y="20" width="1341" height="792" extended-state="0" />
+    <frame x="39" y="69" width="1090" height="777" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29373246" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.329927" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added API call method" />
+    <MESSAGE value="Added functions to retrieve intraday/current data. also a function to update the database, but wouldn't work because of the API call restrictions" />
+    <MESSAGE value="Implementation on some of the functions and code structure change" />
+    <MESSAGE value="changed code structure of singlestock and functions it calls to make them consistent" />
+    <MESSAGE value="Implemented graph()." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented graph()." />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/client/build-SSSClient-Desktop_Qt_5_12_1_MSVC2017_32bit-Debug/Makefile.Debug" />
+    <entry file="file://$PROJECT_DIR$/client/build-SSSClient-Desktop_Qt_5_12_1_MSVC2017_32bit-Debug/Makefile" />
+    <entry file="file://$PROJECT_DIR$/client/build-SSSClient-Desktop_Qt_5_12_1_MSVC2017_32bit-Debug/.qmake.stash" />
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/SSSClient.pro.user" />
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/SSSClient.pro.user.e0c4edc" />
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/SSSClient.pro">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/main.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/SSSClient/mainwindow.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="515">
+          <caret line="92" column="26" selection-start-line="92" selection-end-line="92" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/companylist.csv">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/backend.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="158" column="8" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
+        <state relative-caret-position="-1316">
+          <caret line="201" column="27" lean-forward="true" selection-start-line="201" selection-start-column="27" selection-end-line="201" selection-end-column="27" />
           <folding>
             <element signature="e#21#50#0" expanded="true" />
           </folding>
