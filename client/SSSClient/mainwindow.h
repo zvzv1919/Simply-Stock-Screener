@@ -28,7 +28,8 @@ public slots:
     void switchToSixMonths();
     void switchToOneYear();
     void switchToAllTime();
-    void updateGraph(float high,float low);
+    void clearGraph();
+    void updateGraph();
 private:
     Ui::MainWindow *ui;
     void graph(QString timeframe);
