@@ -165,22 +165,22 @@ def singlestock(stock_symbol):
                 row = [stock_symbol] + row
                 add_stock(row)
             row_count += 1
-    else:
-        data = get_current(stock_symbol)
-        reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            print row
+    #else:
+    data = get_current(stock_symbol)
+    reader = csv.reader(data.text.splitlines())
+    for row in reader:
+        print row
 
     #     print "It Does Not Exist"
     # else:
     #     print "It Does Exist"
-	# if data does not already exist in database - Brian
-	#get_daily(stock_symbol)
-	# get_current(stock_symbol)?
-	# print current - Xuan
-	# else
-	#get_current(stock_symbol)
-	# print current data - Xuan
+    # if data does not already exist in database - Brian
+    #get_daily(stock_symbol)
+    # get_current(stock_symbol)?
+    # print current - Xuan
+    # else
+    #get_current(stock_symbol)
+    # print current data - Xuan
 
     # if data does not already exist in database - Brian
 
@@ -294,13 +294,14 @@ def graph(stock_symbol,  timeframe):
 
 # Takes a search query and searches the database
 def search(query):
+    
 
     vals = query.split(',')
     low = float(vals[0])
     high = float(vals[1])
 
     # Open database connection
-	
+    
 
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
@@ -311,9 +312,9 @@ def search(query):
 
     data = cursor.fetchall() 
     # print the rows
-    s = "Name	Symbol	Low	High	Date <br />"
+    s = "Name    Symbol    Low    High    Date <br />"
     for row in data:
-		print (row[0])
+        print (row[0])
     #    print (row[0], row[1], row[2], row[3], row[4])
     #    s = s + str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) \
     #        + ' ' + str(row[3]) + ' ' + str(row[4]) + '<br />'
@@ -324,12 +325,12 @@ def search(query):
 
 
 def main():
-	#search('9.5,11')
+    #search('9.5,11')
     #test driver
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
     #graph("AAL", "1 month")
-    search("2,11")
+    #search("2,11")
     # print "Current date and time using instance attributes:"
     # print "Current year: %d" % now.year
     # print "Current month: %d" % now.month
@@ -341,21 +342,22 @@ def main():
 
 
     # graph("RAT", "1 month")
-    singlestock("AAL")
+    #singlestock("AAL")
     # control statement
     if len(sys.argv) < 3:
         print "format error"
         exit(1)
-	if sys.argv[1] == "single":
-		singlestock(sys.argv[2])
-	elif sys.argv[1] == "search":
-		search(sys.argv[2])
-	elif sys.argv[1] == "graph":
-		if len(sys.argv) < 4:
-			print "format error"
-			exit(1)
+    if sys.argv[1] == "single":
+        singlestock(sys.argv[2])
+    elif sys.argv[1] == "search":
+        search(sys.argv[2])
+    elif sys.argv[1] == "graph":
+        if len(sys.argv) < 4:
+            print "format error"
+            exit(1)
         graph(sys.argv[2], sys.argv[3])
-	print "format error"
+    else:
+        print "format error"
 
 
 
