@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include "ui_mainwindow.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -22,7 +24,11 @@ public slots:
     void updateDatabase();
     void switchToSingleView();
     void switchToListView();
-
+    void switchToOneMonth();
+    void switchToSixMonths();
+    void switchToOneYear();
+    void switchToAllTime();
+    void updateGraph(float high,float low);
 private:
     Ui::MainWindow *ui;
 

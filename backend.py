@@ -2,10 +2,9 @@
 from StringIO import StringIO
 # import pycurl
 import certifi
-import requests
 import csv
 import sys
-
+import datetime
 import pymysql
 import requests
 import mysql.connector
@@ -58,13 +57,12 @@ import mysql.connector
 # with open('out.csv', 'w') as f:
 #     writer = csv.writer(f)
 #     reader = csv.reader(data.text.splitlines())
-#
 #     for row in reader:
 #         print row[0]
 
 # a list holding all company symbols
 company_list=[]
-
+now=datetime.datetime.now()
 # update the database
 """def update():
     with open('companylist.csv') as csv_file:
@@ -103,9 +101,7 @@ def get_current(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
               '&apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        print row
+    return data
 
 # Get stock info (daily price over time)
 def get_daily(stock_symbol):
@@ -117,12 +113,11 @@ def get_daily(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
               'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        #print row
+
+    return data
+
     # update database with price for each day - Brian
 	#call add_stock
-	return
 	
 def add_stock(name , symbol, low, high , date):
 	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
@@ -132,7 +127,7 @@ def add_stock(name , symbol, low, high , date):
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
-	return processed_text
+	#return processed_text
 
 def get_stock(ticker):
 	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
@@ -148,6 +143,7 @@ def get_stock(ticker):
 
 # Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
 def singlestock(stock_symbol):
+
 	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	print (stock_symbol)
@@ -174,26 +170,109 @@ def singlestock(stock_symbol):
 	# else
 	#get_current(stock_symbol)
 	# print current data - Xuan
-    
+
+    # if data does not already exist in database - Brian
+        data=get_daily(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        #for row in reader:
+            #print row
+
+        # get_current(stock_symbol)?
+        # print current - Xuan
+    # else
+        data=get_current(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        for row in reader:
+            print row
+        # print current data - Xuan
+
+def extractDate(date, component):
+    if component=='YEAR':
+        return int(date[0:4])
+    elif component=='MONTH':
+        return int(date[5:7])
+    elif component=='DAY':
+        return int(date[8:10])
+    else:
+        print "invalid component of date"
 
 # Return price points for graph
 def graph(stock_symbol,  timeframe):
+    max_count=60    #doesn't work for 'all'
 
+    #TODO:GET data from sql
+    data=[] #raw data from database
+    plot_data=[]    #datapoints to be plotted, formatted as[[date, price]]
     if timeframe=='1 month':
-        print '1 month'
+        count=0
+        for row in data:
+            day=extractDate(row[0], 'DAY')
+            month=extractDate(row[0], 'MONTH')
+            if day < now.day and month < now.month and now.month > 1 \
+                    or day < now.day and month == 12 and now.month == 1 \
+                    or month < now.month - 2\
+                    or now.month == 1 and month < 12 \
+                    or count >= max_count:
+                break
+            else:
+                plot_data.add(row[0], row[4])
+                count +=1
+        # print '1 month'
         # take a point every day for 1 month
-    elif timeframe=='3 month':
-        print "6 month"
-    elif timeframe=='3 year':
-        print '3 year'
+    elif timeframe=='6 month':
+        # print "6 month"
+        count = 0
+        prevday=-2
+        for row in data:
+            day=extractDate(row[0], 'DAY')
+            month=extractDate(row[0], 'MONTH')
+            if day < now.day and month < now.month - 5 and now.month > 6 \
+                    or day < now.day and month < now.month + 7 and month > now.month and now.month <=6 \
+                    or now.month > 7 and month < now.month - 6 \
+                    or now.month == 7 and month == 12 \
+                    or now.month <= 6 and month < now.month + 6 and month > now.month\
+                    or count >= max_count or abs(day-prevday)==1:
+                break
+            else:
+                plot_data.add(row[0], row[4])
+                count+=1
+                prevday=day
+    elif timeframe=='1 year':
+        # print '1 year'
+        count = 0
+        prevday = -2
+        for row in data:
+            day = extractDate(row[0], 'DAY')
+            month = extractDate(row[0], 'MONTH')
+            year = extractDate(row[0], 'YEAR')
+            if day < now.day and month == now.month and year < now.year \
+                    or month < now.month and year < now.year and now.month > 1\
+                    or month <= 12 and now.month == 1 and year < now.year\
+                    or count >= max_count or abs(day - prevday) == 1:
+                break
+            else:
+                plot_data.add(row[0], row[4])
+                count += 1
+                prevday = day
     elif timeframe=='all':
-        print 'all'
+        count = 0
+        prevmonth = 0
+        for row in data:
+            month = extractDate(row[0], 'MONTH')
+            if month == prevmonth:
+                break
+            else:
+                plot_data.add(row[0], row[4])
+                count += 1
+                prevmonth = month
+        # print 'all'
     else:
-        print 'error'
+        print 'Invalid timeframe'
     # Take time frame and grab 30 evenly-spaced data points - Xuan
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
-    print "testgraph"
+    # print "testgraph"
+    print plot_data
 
 
 # Takes a search query and searches the database
@@ -205,6 +284,7 @@ def search(query):
 
     # Open database connection
 	
+
     conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
@@ -226,17 +306,21 @@ def search(query):
     conn.close()
 
 
-
-			
-# control statement
-
-
-
 def main():
     #test driver
-    get_stock('RAT')
-    ##get_daily("AAL")
+    #singlestock("AAL")
+    #print extractDate("1234-56-78", "DAY")
     #graph("AAL", "1 month")
+    #search("1,4")
+    # print "Current date and time using instance attributes:"
+    # print "Current year: %d" % now.year
+    # print "Current month: %d" % now.month
+    # print "Current day: %d" % now.day
+    # print "Current hour: %d" % now.hour
+    # print "Current minute: %d" % now.minute
+    # print "Current second: %d" % now.second
+    # print "Current microsecond: %d" % now.microsecond
+
     # control statement
     if len(sys.argv) < 3:
         print "format error"
