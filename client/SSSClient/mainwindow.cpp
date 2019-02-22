@@ -154,7 +154,7 @@ void MainWindow::search() {
     QString poutput(p.readAllStandardOutput());
     qDebug() << poutput;
 
-    if(poutput.compare("\r\n") == 0) {
+    if(poutput.compare("") == 0) {
         ui->searchresults->setText("Search Results for: " + query + " : No results found");
         ui->pageswitcher->setCurrentWidget(ui->listview);
         return;
@@ -163,6 +163,11 @@ void MainWindow::search() {
     ui->searchresults->setText("Search Results for: " + query);
 
     // TODO: Display results in list
+    QStringList searchlist = poutput.split("\r\n");
+    for(int i = 0; i < searchlist.length(); i++) {
+        ui->resultslist->addItem(searchlist[i]);
+    }
+
 
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
