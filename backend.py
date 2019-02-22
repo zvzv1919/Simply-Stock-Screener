@@ -101,9 +101,7 @@ def get_current(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
               '&apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        print row
+    return data
 
 # Get stock info (daily price over time)
 def get_daily(stock_symbol):
@@ -118,9 +116,9 @@ def get_daily(stock_symbol):
     reader = csv.reader(data.text.splitlines())
     for row in reader:
         print row
+    return data
     # update database with price for each day - Brian
 	#call add_stock
-	return
 	
 def add_stock(name , symbol, low, high , date):
 	conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss', database = 'stock_info',auth_plugin='mysql_native_password')
@@ -130,18 +128,25 @@ def add_stock(name , symbol, low, high , date):
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
-	return processed_text
+	#return processed_text
 
 
 
 # Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
 def singlestock(stock_symbol):
     # if data does not already exist in database - Brian
-        get_daily(stock_symbol)
+        data=get_daily(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        for row in reader:
+            print row
+
         # get_current(stock_symbol)?
         # print current - Xuan
     # else
-        get_current(stock_symbol)
+        data=get_current(stock_symbol)
+        reader = csv.reader(data.text.splitlines())
+        for row in reader:
+            print row
         # print current data - Xuan
     
 
@@ -198,32 +203,12 @@ def search(query):
 
     conn.close()
 
-
-
-			
-# control statement
-if len(sys.argv) < 3:
-    print ("format error")
-    exit(1)
-if sys.argv[1] == "single":
-    singlestock(sys.argv[2])
-elif sys.argv[1] == "search":
-    search(sys.argv[2])
-elif sys.argv[1] == "graph":
-    if len(sys.argv) < 4:
-        print ("format error")
-        exit(1)
-    graph(sys.argv[2], sys.argv[3])
-else:
-    print ("format error")
-    exit(1)
-
-
 def main():
     #test driver
     print ""
-    get_daily("F")
+    singlestock("AAL")
     graph("AAL", "1 month")
+    #search("1,4")
     # control statement
     if len(sys.argv) < 3:
         print "format error"
