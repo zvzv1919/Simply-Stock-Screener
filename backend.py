@@ -113,9 +113,6 @@ def get_daily(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
               'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        print row
     return data
     # update database with price for each day - Brian
 	#call add_stock
@@ -137,8 +134,8 @@ def singlestock(stock_symbol):
     # if data does not already exist in database - Brian
         data=get_daily(stock_symbol)
         reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            print row
+        #for row in reader:
+            #print row
 
         # get_current(stock_symbol)?
         # print current - Xuan
@@ -275,8 +272,8 @@ def main():
     #test driver
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
-    graph("AAL", "1 month")
-    search("1,4")
+    #graph("AAL", "1 month")
+    #search("1,4")
     # print "Current date and time using instance attributes:"
     # print "Current year: %d" % now.year
     # print "Current month: %d" % now.month
