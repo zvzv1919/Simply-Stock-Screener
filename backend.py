@@ -235,7 +235,7 @@ def graph(stock_symbol,  timeframe):
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
     # print "testgraph"
-    return plot_data
+    print plot_data
 
 
 # Takes a search query and searches the database
