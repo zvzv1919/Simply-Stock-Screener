@@ -120,17 +120,17 @@ def get_daily(stock_symbol):
 	#call add_stock
 	
 def add_stock(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient):
-	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	#print ("writing to db")
-	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
+	cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
 	#return processed_text
 
 def get_stock(ticker):
-	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 
 	cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
@@ -285,7 +285,7 @@ def search(query):
     # Open database connection
 	
 
-    conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
                    , [low, high])
@@ -307,6 +307,7 @@ def search(query):
 
 
 def main():
+	#search('9.5,11')
     #test driver
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
@@ -320,23 +321,22 @@ def main():
     # print "Current minute: %d" % now.minute
     # print "Current second: %d" % now.second
     # print "Current microsecond: %d" % now.microsecond
-
-    # control statement
-    if len(sys.argv) < 3:
-        print "format error"
+	#add_stock('PiP', '2019-02-22', 9.13, 10.01, 9.00, 9.20, 9.20, 100, 1.00, 1.00)
+	# control statement
+	if len(sys.argv) < 3:
+		print "format error"
         exit(1)
-    if sys.argv[1] == "single":
-        singlestock(sys.argv[2])
-    elif sys.argv[1] == "search":
-        search(sys.argv[2])
-    elif sys.argv[1] == "graph":
-        if len(sys.argv) < 4:
-            print "format error"
-            exit(1)
+	if sys.argv[1] == "single":
+		singlestock(sys.argv[2])
+	elif sys.argv[1] == "search":
+		search(sys.argv[2])
+	elif sys.argv[1] == "graph":
+		if len(sys.argv) < 4:
+			print "format error"
+			exit(1)
         graph(sys.argv[2], sys.argv[3])
-    else:
-        print "format error"
-        exit(1)
+	print "format error"
+
 
 
 if __name__ == '__main__':
