@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include "ui_mainwindow.h"
+
+QT_CHARTS_USE_NAMESPACE
 
 namespace Ui {
 class MainWindow;
@@ -26,7 +29,7 @@ public slots:
     void switchToSixMonths();
     void switchToOneYear();
     void switchToAllTime();
-
+    void updateGraph();
 private:
     Ui::MainWindow *ui;
 

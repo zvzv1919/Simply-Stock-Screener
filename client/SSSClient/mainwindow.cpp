@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <QFileInfo>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -32,6 +33,36 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->currentdatatable1->setItem(0,1, new QTableWidgetItem("999.99"));
     ui->currentdatatable2->setItem(0,1, new QTableWidgetItem("+999.99 (100%)"));
 
+    QLineSeries *defaultSeries = new QLineSeries();
+    QChart *chart = new QChart();
+
+    defaultSeries->append(0,0);
+    chart->addSeries(defaultSeries);
+    chart->createDefaultAxes();
+
+    QValueAxis *axisX =new QValueAxis;
+        axisX->setRange(0,12);
+        axisX->setGridLineVisible(true);
+        axisX->setTickCount(11);
+        axisX->setMinorTickCount(5);
+
+     QValueAxis *axisY=new QValueAxis;
+            axisY->setRange(-5,10);
+            axisY->setGridLineVisible(true);
+            axisY->setTickCount(6);
+            axisY->setMinorTickCount(2);
+
+     chart->setAxisX(axisX,defaultSeries);
+     chart->setAxisY(axisY,defaultSeries);
+     chart->legend()->hide();
+     chart->createDefaultAxes();
+
+     QFont *graphTitle= new QFont();
+     graphTitle->setItalic(true);
+     chart->setTitleFont(*graphTitle);
+     chart->setTitle("Current Price: ");
+     ui->currentQcharts->setChart(chart);
+     ui->currentQcharts->setRenderHint(QPainter::Antialiasing);
 }
 
 MainWindow::~MainWindow()
@@ -138,3 +169,30 @@ void MainWindow::switchToSingleView() {
 void MainWindow::switchToListView() {
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
+
+void MainWindow::updateGraph(){
+    QLineSeries *series = new QLineSeries();
+    QChart *chart = new QChart();
+    QValueAxis *uaxisX =new QValueAxis;
+        uaxisX->setRange(0,12);
+        uaxisX->setGridLineVisible(true);
+        uaxisX->setTickCount(11);
+        uaxisX->setMinorTickCount(5);
+
+     QValueAxis *uaxisY=new QValueAxis;
+        uaxisY->setRange(-5,10);
+        uaxisY->setGridLineVisible(true);
+        uaxisY->setTickCount(6);
+        uaxisY->setMinorTickCount(2);
+        chart->setAxisX(uaxisX,series);
+        chart->setAxisY(uaxisY,series);
+        chart->legend()->hide();
+        chart->createDefaultAxes();
+
+            QFont *graphTitle= new QFont();
+            graphTitle->setItalic(true);
+            chart->setTitleFont(*graphTitle);
+            chart->setTitle("Current Price: ");
+            ui->currentQcharts->setChart(chart);
+}
+
