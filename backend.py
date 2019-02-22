@@ -6,6 +6,10 @@ import requests
 import csv
 import sys
 
+import pymysql
+import requests
+import mysql.connector
+
 # buffer = StringIO()
 # c = pycurl.Curl()
 #
@@ -107,6 +111,7 @@ def get_daily(stock_symbol):
     """data = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=MSFT&'
                     'apikey=PTF07M1M1UTX6RCF&datatype=csv')
     """
+
     request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
               'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
@@ -114,6 +119,18 @@ def get_daily(stock_symbol):
     for row in reader:
         print row
     # update database with price for each day - Brian
+	#call add_stock
+	return
+	
+def add_stock(name , symbol, low, high , date):
+	conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
+	#print ("writing to db")
+	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s)", [name , symbol, low, high , date])
+	#print ("wrote to db")
+	conn.commit();
+	conn.close();
+	return processed_text
 
 
 
@@ -130,6 +147,7 @@ def singlestock(stock_symbol):
 
 # Return price points for graph
 def graph(stock_symbol,  timeframe):
+
     if timeframe=='1 month':
         print '1 month'
         # take a point every day for 1 month
@@ -150,10 +168,56 @@ def graph(stock_symbol,  timeframe):
 # Takes a search query and searches the database
 def search(query):
 
-    # Parse query to get price info - Xuan
-    # Retrieve list from database matching price info - Brian
-    # print results - Xuan
-    print "testsearch"
+    vals = query.split(',')
+    low = float(vals[0])
+    high = float(vals[1])
+
+    # Open database connection
+	
+    conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss',
+                           database = 'stock_info',auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    cursor.execute(' SELECT * FROM stocks WHERE Low > %s AND High < %s  ORDER by Low '
+                   , [low, high])
+
+    # fetch all of the rows from the query
+
+    data = cursor.fetchall()
+    my_list = list()
+    print ('Name, Symbol, Low, High, Date')
+
+    # print the rows
+
+    s = "Name	Symbol	Low	High	Date <br />"
+    for row in data:
+        print (row[0], row[1], row[2], row[3], row[4])
+        s = s + str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) \
+            + ' ' + str(row[3]) + ' ' + str(row[4]) + '<br />'
+
+    # disconnect from server
+
+    conn.close()
+
+
+
+			
+# control statement
+if len(sys.argv) < 3:
+    print ("format error")
+    exit(1)
+if sys.argv[1] == "single":
+    singlestock(sys.argv[2])
+elif sys.argv[1] == "search":
+    search(sys.argv[2])
+elif sys.argv[1] == "graph":
+    if len(sys.argv) < 4:
+        print ("format error")
+        exit(1)
+    graph(sys.argv[2], sys.argv[3])
+else:
+    print ("format error")
+    exit(1)
+
 
 def main():
     #test driver
@@ -176,6 +240,7 @@ def main():
     else:
         print "format error"
         exit(1)
+
 
 if __name__ == '__main__':
     main()
