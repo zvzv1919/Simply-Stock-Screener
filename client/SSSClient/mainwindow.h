@@ -31,6 +31,8 @@ public slots:
     void updateGraph(float high,float low);
 private:
     Ui::MainWindow *ui;
+    void graph(QString timeframe);
+    QString ticker;
 
 };
 

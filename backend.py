@@ -200,8 +200,13 @@ def extractDate(date, component):
 def graph(stock_symbol,  timeframe):
     max_count=60    #doesn't work for 'all'
 
-    #TODO:GET data from sql
-    data=[] #raw data from database
+    conn = mysql.connector.connect(host='192.168.1.134', user='test', password='cs407test', database='stock_info',
+                                   auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [stock_symbol])
+    data = cursor.fetchall() #raw data from database
+
     plot_data=[]    #datapoints to be plotted, formatted as[[date, price]]
     if timeframe=='1 month':
         count=0
@@ -215,7 +220,7 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count:
                 break
             else:
-                plot_data.add(row[0], row[4])
+                plot_data.add(row[1], row[5])
                 count +=1
         # print '1 month'
         # take a point every day for 1 month
@@ -234,7 +239,7 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count or abs(day-prevday)==1:
                 break
             else:
-                plot_data.add(row[0], row[4])
+                plot_data.add(row[1], row[5])
                 count+=1
                 prevday=day
     elif timeframe=='1 year':
@@ -251,7 +256,7 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count or abs(day - prevday) == 1:
                 break
             else:
-                plot_data.add(row[0], row[4])
+                plot_data.add(row[1], row[5])
                 count += 1
                 prevday = day
     elif timeframe=='all':
@@ -262,7 +267,7 @@ def graph(stock_symbol,  timeframe):
             if month == prevmonth:
                 break
             else:
-                plot_data.add(row[0], row[4])
+                plot_data.add(row[1], row[5])
                 count += 1
                 prevmonth = month
         # print 'all'
@@ -321,10 +326,13 @@ def main():
     # print "Current minute: %d" % now.minute
     # print "Current second: %d" % now.second
     # print "Current microsecond: %d" % now.microsecond
-	#add_stock('PiP', '2019-02-22', 9.13, 10.01, 9.00, 9.20, 9.20, 100, 1.00, 1.00)
-	# control statement
-	if len(sys.argv) < 3:
-		print "format error"
+
+
+    graph("CAT", "1 year")
+    # control statement
+    if len(sys.argv) < 3:
+        print "format error"
+
         exit(1)
 	if sys.argv[1] == "single":
 		singlestock(sys.argv[2])
