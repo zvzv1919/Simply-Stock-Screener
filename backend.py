@@ -147,7 +147,7 @@ def singlestock(stock_symbol):
 	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	print (stock_symbol)
-	cursor.execute("SELECT * FROM Stocks WHERE Symbol = %s",[stock_symbol])
+	cursor.execute("SELECT * FROM Stocks WHERE ticker = %s",[stock_symbol])
 	# gets the number of rows affected by the command executed
 	data = cursor.fetchall()
 	count = 0
