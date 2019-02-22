@@ -5,7 +5,6 @@
 #include <QListWidget>
 #include "ui_mainwindow.h"
 
-QT_CHARTS_USE_NAMESPACE
 
 namespace Ui {
 class MainWindow;

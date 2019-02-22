@@ -1,9 +1,11 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include <QProcess>
 #include <QtDebug>
 #include <QFileInfo>
+#include <QtCharts>
+
+QT_CHARTS_USE_NAMESPACE
 
 
 MainWindow::MainWindow(QWidget *parent) :
