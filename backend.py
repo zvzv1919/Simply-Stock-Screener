@@ -113,24 +113,64 @@ def get_daily(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&' \
               'apikey=PTF07M1M1UTX6RCF&datatype=csv' % stock_symbol
     data = requests.get(request)
+
     return data
+
     # update database with price for each day - Brian
 	#call add_stock
 	
-def add_stock(name , symbol, low, high , date):
-	conn = mysql.connector.connect(host = 'DESKTOP-38PNH3Q', user = 'root', password ='cs407sss', database = 'stock_info',auth_plugin='mysql_native_password')
+def add_stock(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient):
+	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
 	cursor = conn.cursor()
 	#print ("writing to db")
-	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s)", [name , symbol, low, high , date])
+	cursor.execute("INSERT INTO stocks(Name, Symbol, Low, High, Date ) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient])
 	#print ("wrote to db")
 	conn.commit();
 	conn.close();
 	#return processed_text
 
+def get_stock(ticker):
+	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
 
+	cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
+	data = cursor.fetchall() 
+	for row in data:
+		print (row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+
+	conn.commit();
+	conn.close();
 
 # Retrieve current data for single stock, return it to be displayed, and update database with historical daily price info
 def singlestock(stock_symbol):
+
+	conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor()
+	print (stock_symbol)
+	cursor.execute("SELECT * FROM Stocks WHERE ticker = %s",[stock_symbol])
+	# gets the number of rows affected by the command executed
+	data = cursor.fetchall()
+	count = 0
+	
+	for row in data:
+		print (row[0])	
+		count = count + 1
+	if count == 0:
+		print "It does not exist"
+	else:
+		print "It does exist"
+	#
+	#print "It Does Not Exist"
+	#else:
+	#	print "It Does Exist"
+	# if data does not already exist in database - Brian
+	#get_daily(stock_symbol)
+	# get_current(stock_symbol)?
+	# print current - Xuan
+	# else
+	#get_current(stock_symbol)
+	# print current data - Xuan
+
     # if data does not already exist in database - Brian
         data=get_daily(stock_symbol)
         reader = csv.reader(data.text.splitlines())
@@ -145,7 +185,7 @@ def singlestock(stock_symbol):
         for row in reader:
             print row
         # print current data - Xuan
-    
+
 def extractDate(date, component):
     if component=='YEAR':
         return int(date[0:4])
@@ -244,29 +284,27 @@ def search(query):
 
     # Open database connection
 	
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test',
-                           database = 'stock_info',auth_plugin='mysql_native_password')
+
+    conn = mysql.connector.connect(host = '192.168.1.134', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    cursor.execute(' SELECT * FROM stocks WHERE Low > %s AND High < %s  ORDER by Low '
+    cursor.execute(' SELECT * FROM stocks WHERE close > %s AND close < %s  ORDER by close '
                    , [low, high])
 
     # fetch all of the rows from the query
 
-    data = cursor.fetchall()
-    my_list = list()
-    print ('Name, Symbol, Low, High, Date')
-
+    data = cursor.fetchall() 
     # print the rows
-
     s = "Name	Symbol	Low	High	Date <br />"
     for row in data:
-        print (row[0], row[1], row[2], row[3], row[4])
-        s = s + str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) \
-            + ' ' + str(row[3]) + ' ' + str(row[4]) + '<br />'
+		print (row[0])
+    #    print (row[0], row[1], row[2], row[3], row[4])
+    #    s = s + str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) \
+    #        + ' ' + str(row[3]) + ' ' + str(row[4]) + '<br />'
 
     # disconnect from server
 
     conn.close()
+
 
 def main():
     #test driver
@@ -282,6 +320,7 @@ def main():
     # print "Current minute: %d" % now.minute
     # print "Current second: %d" % now.second
     # print "Current microsecond: %d" % now.microsecond
+
     # control statement
     if len(sys.argv) < 3:
         print "format error"
