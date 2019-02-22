@@ -64,7 +64,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-193</y>
                 <width>998</width>
                 <height>678</height>
                </rect>
@@ -344,7 +344,7 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <layout class="QGridLayout" name="gridLayout_5">
                      <item row="0" column="1">
-                      <widget class="QPushButton" name="pushButton_3">
+                      <widget class="QPushButton" name="sixmonthsbutton">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -363,7 +363,7 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QPushButton" name="pushButton_4">
+                      <widget class="QPushButton" name="alltimebutton">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -371,12 +371,12 @@ p, li { white-space: pre-wrap; }
                         </size>
                        </property>
                        <property name="text">
-                        <string>3 Years</string>
+                        <string>All Time</string>
                        </property>
                       </widget>
                      </item>
                      <item row="1" column="0">
-                      <widget class="QPushButton" name="pushButton_2">
+                      <widget class="QPushButton" name="oneyearbutton">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -395,7 +395,7 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QPushButton" name="pushButton">
+                      <widget class="QPushButton" name="onemonthbutton">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -742,6 +742,70 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>onemonthbutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>switchToOneMonth()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>903</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sixmonthsbutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>switchToSixMonths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1108</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>oneyearbutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>switchToOneYear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>903</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>alltimebutton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>switchToAllTime()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1108</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>switchToSingleView()</slot>
@@ -749,5 +813,9 @@ p, li { white-space: pre-wrap; }
   <slot>viewStockDetails(QListWidgetItem*)</slot>
   <slot>search()</slot>
   <slot>updateDatabase()</slot>
+  <slot>switchToOneMonth()</slot>
+  <slot>switchToSixMonths()</slot>
+  <slot>switchToOneYear()</slot>
+  <slot>switchToAllTime()</slot>
  </slots>
 </ui>
