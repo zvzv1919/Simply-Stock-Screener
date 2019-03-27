@@ -312,7 +312,7 @@ def search(query):
     #cursor.execute('WITH ranked AS (SELECT m.* , ROW_NUMBER())', [low,high])
     #cursor.execute('SELECT ticker, timestamp FROM (SELECT ticker, MAX(timestamp) FROM stocks GROUP BY ticker DESC ) as ticks WHERE %s < close AND close < %s ORDER BY ticker', [low,high])
     #cursor.execute('SELECT * FROM stocks WHERE %s < close AND close < %s ORDER BY timestamp ASC', [low,high])    
-	# fetch all of the rows from the query
+    # fetch all of the rows from the query
     cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s GROUP BY ticker ORDER BY timestamp', [low, high])
     data = cursor.fetchall() 
     # print the rows
@@ -327,9 +327,56 @@ def search(query):
 
     conn.close()
 
-
+def iextest():
+    prefix='https://api.iextrading.com/1.0'
+    with open('IEX_API.csv') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            else:
+                #print row[0]
+                company_list.append(row[0])
+                line_count += 1
+    #print company_list
+    #TODO: complete the testing and intraday data filling
+    batchnum=0
+    request = prefix + '/stock/market/batch?types=quote&symbols='
+    for symbol in company_list:
+        if batchnum == 100:
+            # Dispatch previous batch request
+            print ""
+            print request
+            data=requests.get(request)
+            reader = csv.reader(data.text.splitlines())
+            for row in reader:
+                print row
+            # Reset batchnum and request
+            batchnum=0
+            request=prefix + '/stock/market/batch?types=quote&symbols='
+        if batchnum == 0:
+            request = request + symbol
+        else:
+            request = request + ',' + symbol
+        batchnum += 1
+    #Dispatch last batch request
+    print ""
+    print request
+    data=requests.get(request)
+    reader = csv.reader(data.text.splitlines())
+    for row in reader:
+        print row
 def main():
     
+    """prefix='https://api.iextrading.com/1.0'
+    request = prefix + '/stock/market/batch?types=quote&symbols=AAPL,UTX'
+    print request
+    data=requests.get(request)
+    reader = csv.reader(data.text.splitlines())
+    for row in reader:
+        print row
+    """
     #test driver
     #singlestock("AAL")
     #print extractDate("1234-56-78", "DAY")
@@ -343,7 +390,8 @@ def main():
     # print "Current minute: %d" % now.minute
     # print "Current second: %d" % now.second
     # print "Current microsecond: %d" % now.microsecond
-
+    
+    #iextest()
 
     # graph("RAT", "1 month")
     #singlestock("AAL")
