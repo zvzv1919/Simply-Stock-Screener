@@ -121,7 +121,11 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
 void MainWindow::search() {
     QString query = ui->searchbar->text();
+    QString sdate = ui->startdate->text();
+    QString edate = ui->enddate->text();
     ui->searchbar->clear();
+    ui->startdate->clear();
+    ui->enddate->clear();
     qDebug() << "1";
     // Check if search is for single stock or list
     if(query.isUpper()) {
@@ -138,6 +142,18 @@ void MainWindow::search() {
     QStringList params;
     path += "/../backend.py";
     params << path << "search" << query;
+
+    // Check if time limit needed
+    if(sdate.isEmpty()) {
+        sdate = "sot";
+    }
+    if(edate.isEmpty()) {
+        edate = "present";
+    }
+    params << sdate;
+    params << edate;
+
+    // Start process
     p.start("python.exe", params);
 
     // Prepare searching screen
@@ -154,15 +170,20 @@ void MainWindow::search() {
     QString poutput(p.readAllStandardOutput());
     qDebug() << poutput;
 
+    // Format sdate so it is human-readable
+    if(sdate.compare("sot") == 0) {
+        sdate = "start of time";
+    }
+
     if(poutput.compare("") == 0) {
-        ui->searchresults->setText("Search Results for: " + query + " : No results found");
+        ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate + " : No results found");
         ui->pageswitcher->setCurrentWidget(ui->listview);
         return;
     }
 
-    ui->searchresults->setText("Search Results for: " + query);
+    ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate);
 
-    // TODO: Display results in list
+    // Display results in list
     QStringList searchlist = poutput.split("\r\n");
     for(int i = 0; i < searchlist.length(); i++) {
         ui->resultslist->addItem(searchlist[i]);

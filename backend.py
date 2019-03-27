@@ -295,9 +295,27 @@ def graph(stock_symbol,  timeframe):
     print plot_data
 
 
-# Takes a search query and searches the database
-def search(query):
+# Takes a search query and searches the database - should support "sot" or "YYYY-MM-DD" for sdate and "present" or "YYYY-MM-DD" for edate
+def search(query, sdate, edate):
     
+    #check for date validity
+    sdatevals = sdate.split('-')
+    if len(sdatevals) == 3:
+        # TODO: Check to make sure date vals are good
+        x=5
+    else:
+        if sdate != "sot":
+            #print sdate
+            return
+
+    edatevals = edate.split('-')
+    if len(edatevals) == 3:
+        # TODO: Check to make sure date vals are good
+        x=5
+    else:
+        if edate != "present":
+            #print edate
+            return
 
     vals = query.split(',')
     low = float(vals[0])
@@ -402,7 +420,10 @@ def main():
     if sys.argv[1] == "single":
         singlestock(sys.argv[2])
     elif sys.argv[1] == "search":
-        search(sys.argv[2])
+        if len(sys.argv) < 5:
+            print "format error"
+            exit(1)
+        search(sys.argv[2], sys.argv[3], sys.argv[4])
     elif sys.argv[1] == "graph":
         if len(sys.argv) < 4:
             print "format error"
