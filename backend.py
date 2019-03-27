@@ -144,7 +144,30 @@ def get_stock(ticker):
 
     conn.commit();
     conn.close();
+	
+def get_historical(ticker):
+    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
 
+    cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
+    data = cursor.fetchall()
+    for row in data:
+		
+		print (row[1]),
+		print (row[5])
+
+    conn.commit();
+    conn.close();
+	
+def search_timeframe(start, end, low, high):
+	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+	cursor = conn.cursor();
+	cursor.execute('SELECT * FROM stocks WHERE %s <= timestamp AND timestamp <= %s AND close >= %s AND close <= %s GROUP BY ticker ', [start,end, low,high])
+	data = cursor.fetchall()
+	for row in data:
+		print (row[0])
+	conn.commit();
+	conn.close();
 
 # Retrieve current data for single stock, return it to be displayed, and
 # update database with historical daily price info
@@ -389,7 +412,9 @@ def iextest():
     for row in reader:
         print row
 def main():
-    
+    #get_historical("aapl");
+    #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
+
     """prefix='https://api.iextrading.com/1.0'
     request = prefix + '/stock/market/batch?types=quote&symbols=AAPL,UTX'
     print request
