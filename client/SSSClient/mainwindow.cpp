@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->currentdatatable2->setItem(2,0, new QTableWidgetItem("Previous Close:"));
     ui->currentdatatable2->setItem(3,0, new QTableWidgetItem("Day Low:"));
 
+    QStringList headerlist;
+    headerlist << "Date" << "Price";
+    ui->historicaldatatable->setHorizontalHeaderLabels(headerlist);
+
     QLineSeries *defaultSeries = new QLineSeries();
     QChart *chart = new QChart();
 
@@ -65,13 +69,20 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     QString stockstring = stock->text();
     ticker = stockstring;
 
-    // Create process to retrieve data
+    // Create process to retrieve current data
     QProcess p;
     QString path = QFileInfo(".").absolutePath();
     QStringList params;
     path += "/../backend.py";
     params << path << "single" << stockstring;
     p.start("python.exe", params);
+
+    // Create process to retrieve historical data
+    QProcess p2;
+    QStringList params2;
+    params2 << path << "historical" << stockstring;
+    p2.start("python.exe", params2);
+
     // Prepare data screen
     ui->stockname->setText("");
     for(int i = 0; i < ui->currentdatatable1->rowCount(); i++) {
@@ -81,7 +92,10 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
         ui->currentdatatable2->setItem(i,1, nullptr);
     }
 
-    // Await process return and fill table with data -
+    ui->historicaldatatable->clearContents();
+    ui->historicaldatatable->setRowCount(0);
+
+    // Await current data process return and fill table with data -
     if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
         ui->stockname->setText(stockstring.append(" - Error receiving data"));
@@ -116,6 +130,19 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     ui->stockname->setText(stockstring + " - " + datalist[6]);
 
+    // Await historical data process return and fill table with data
+    if(!p2.waitForFinished(-1)) {
+        qDebug() << "Error with process";
+        ui->pageswitcher->setCurrentWidget(ui->singleview);
+        return;
+    }
+    QString poutput2(p2.readAllStandardOutput());
+
+    qDebug() << poutput2;
+
+    // TODO: Populate table with results
+
+    // Switch to single view
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }
 
