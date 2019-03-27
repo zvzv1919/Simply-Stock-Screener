@@ -194,7 +194,21 @@ void MainWindow::search() {
 }
 
 void MainWindow::updateDatabase() {
-    // TODO: Fork thread to submit update database request
+    // Disable updatebutton during update
+    ui->updatebutton->setEnabled(false);
+    ui->updatebutton->setText("Updating Database...");
+
+    // Create process to update database
+    updateprocess = new QProcess(this);
+    QString path = QFileInfo(".").absolutePath();
+    QStringList params;
+    path += "/../backend.py";
+    params << path << "update";
+
+    // Connect process finished signal to updatebutton slot
+    connect(updateprocess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(updateDatabaseButton(int, QProcess::ExitStatus)));
+
+    updateprocess->start("python.exe", params);
 }
 
 void MainWindow::graph(QString timeframe) {
@@ -283,5 +297,16 @@ void MainWindow::clearGraph(){
 
 void MainWindow::updateGraphPoint(double time, double price, QLineSeries* ss){
     ss->append(time,price);
+}
+
+void MainWindow::updateDatabaseButton(int code, QProcess::ExitStatus status) {
+    if(code == 0) {
+        ui->updatebutton->setText("Update Database");
+        ui->updatebutton->setEnabled(true);
+    }
+    else {
+        ui->updatebutton->setText("Database Update Failed");
+    }
+    delete updateprocess;
 }
 

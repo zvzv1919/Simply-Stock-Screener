@@ -61,6 +61,9 @@ import mysql.connector
 company_list=[]
 now=datetime.datetime.now()
 # update the database
+def update():
+    # use iextest() as an example
+    return
 """def update():
     with open('companylist.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -415,8 +418,12 @@ def main():
     #singlestock("AAL")
     # control statement
     if len(sys.argv) < 3:
-        print "format error"
-        exit(1)
+        if (len(sys.argv) == 2) and (sys.argv[1] == "update"):
+            update()
+            return
+        else:
+            print "format error"
+            exit(1)
     if sys.argv[1] == "single":
         singlestock(sys.argv[2])
     elif sys.argv[1] == "search":
