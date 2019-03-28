@@ -327,7 +327,7 @@ def search(query, sdate, edate):
     #check for date validity
     sdatevals = sdate.split('-')
     if len(sdatevals) == 3:
-		print(sdatevals[0],sdatevals[1],sdatevals[2]);
+		#print(sdatevals[0],sdatevals[1],sdatevals[2]);
 		if ( (len(sdatevals[0])>= 1 and  len(sdatevals[0]) <= 4) and (int(sdatevals[1])>=1 and int(sdatevals[1]) <= 12) and (int(sdatevals[2]) >=1 and int(sdatevals[2]) <= 31)):
 			x = 1
 		else :
