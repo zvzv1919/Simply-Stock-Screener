@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8416176c-d5a0-458e-bca5-bed5e9f0e407" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/backend.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/SSSClient/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/client/SSSClient/mainwindow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,7 +16,7 @@
       <file leaf-file-name="server.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="562">
+            <state relative-caret-position="1672">
               <caret line="92" column="26" selection-start-line="92" selection-end-line="92" selection-end-column="26" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
@@ -29,8 +28,8 @@
       <file leaf-file-name="backend.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="268" column="44" lean-forward="true" selection-start-line="268" selection-start-column="44" selection-end-line="268" selection-end-column="44" />
+            <state relative-caret-position="451">
+              <caret line="264" column="30" lean-forward="true" selection-start-line="264" selection-start-column="30" selection-end-line="264" selection-end-column="30" />
               <folding>
                 <element signature="e#21#50#0" expanded="true" />
               </folding>
@@ -44,6 +43,7 @@
     <findStrings>
       <find>historical</find>
       <find>6 month</find>
+      <find>histo</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -67,7 +67,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -95,6 +94,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -181,6 +181,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1381" height="885" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2933431" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -213,6 +214,26 @@
     <option name="LAST_COMMIT_MESSAGE" value="Implemented graph()." />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1748">
+          <caret line="92" column="26" selection-start-line="92" selection-end-line="92" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backend.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5092">
+          <caret line="268" column="44" lean-forward="true" selection-start-line="268" selection-start-column="44" selection-end-line="268" selection-end-column="44" />
+          <folding>
+            <element signature="e#21#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1748">
@@ -285,7 +306,7 @@
     <entry file="file://$PROJECT_DIR$/client/SSSClient/SSSClient.pro.user.e0c4edc" />
     <entry file="file://$PROJECT_DIR$/cs407 test/server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="562">
+        <state relative-caret-position="1672">
           <caret line="92" column="26" selection-start-line="92" selection-end-line="92" selection-end-column="26" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
@@ -295,8 +316,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="268" column="44" lean-forward="true" selection-start-line="268" selection-start-column="44" selection-end-line="268" selection-end-column="44" />
+        <state relative-caret-position="451">
+          <caret line="264" column="30" lean-forward="true" selection-start-line="264" selection-start-column="30" selection-end-line="264" selection-end-column="30" />
           <folding>
             <element signature="e#21#50#0" expanded="true" />
           </folding>

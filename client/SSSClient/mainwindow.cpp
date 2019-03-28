@@ -308,6 +308,7 @@ void MainWindow::graph(QString timeframe) {
     newchart->addSeries(sp);
 
     QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setTickCount(10);
     axisX->setFormat("MM-dd-yyyy");
     newchart->addAxis(axisX, Qt::AlignBottom);
     sp->attachAxis(axisX);
@@ -316,7 +317,7 @@ void MainWindow::graph(QString timeframe) {
     newchart->addAxis(axisY, Qt::AlignLeft);
     sp->attachAxis(axisY);
     //TODO: Once get data,use a for loop to call UpdateGraphPoint() to plot sp
-    newchart->setTitle("Stock Price");
+    newchart->setTitle(ticker);
     //newchart->createDefaultAxes();
     ui->currentQcharts->setChart(newchart);
 
