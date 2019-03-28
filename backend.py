@@ -247,7 +247,7 @@ def graph(stock_symbol,  timeframe):
 
     cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [stock_symbol])
     data = cursor.fetchall() # raw data from database
-
+    # print data
     plot_data=[]    # datapoints to be plotted, formatted as[[date, price]]
     if timeframe=='1 month':
         count=0
@@ -261,7 +261,9 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count:
                 break
             else:
-                plot_data.append([row[1], row[5]])
+                # plot_data.append([row[1], row[5]])
+                print(row[1]),
+                print(row[5])
                 count +=1
         # print '1 month'
         # take a point every day for 1 month
@@ -280,7 +282,9 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count or abs(day-prevday)==1:
                 break
             else:
-                plot_data.append([row[1], row[5]])
+                # plot_data.append([row[1], row[5]])
+                print (row[1]),
+                print (row[5])
                 count+=1
                 prevday=day
     elif timeframe=='1 year':
@@ -297,7 +301,9 @@ def graph(stock_symbol,  timeframe):
                     or count >= max_count or abs(day - prevday) == 1:
                 break
             else:
-                plot_data.append([row[1], row[5]])
+                # plot_data.append([row[1], row[5]])
+                print(row[1]),
+                print(row[5])
                 count += 1
                 prevday = day
     elif timeframe=='all':
@@ -308,7 +314,9 @@ def graph(stock_symbol,  timeframe):
             if month == prevmonth:
                 break
             else:
-                plot_data.append([row[1], row[5]])
+                # plot_data.append([row[1], row[5]])
+                print(row[1]),
+                print(row[5])
                 count += 1
                 prevmonth = month
         # print 'all'
@@ -318,7 +326,7 @@ def graph(stock_symbol,  timeframe):
     # Retrieve those data points from database x30 - Brian
     # print 30 data points - Xuan
     # print "testgraph"
-    print plot_data
+    # print plot_data
 
 
 # Takes a search query and searches the database - should support "sot" or "YYYY-MM-DD" for sdate and "present" or "YYYY-MM-DD" for edate

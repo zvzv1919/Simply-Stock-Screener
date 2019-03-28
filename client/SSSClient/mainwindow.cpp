@@ -253,33 +253,69 @@ void MainWindow::updateDatabase() {
 void MainWindow::graph(QString timeframe) {
 
     // Create process to retrieve data
-    QProcess p;
+
+    //QProcess p;
     QString path = QFileInfo(".").absolutePath();
     QStringList params;
     path += "/../backend.py";
-    params << path << "graph" << ticker << timeframe;
+    /*params << path << "graph" << ticker << timeframe;
     p.start("python.exe", params);
-
+    */
     clearGraph();
     // TODO: clear graph
     // Await process return and fill list with data
-    if(!p.waitForFinished(-1)) {
+    /*if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
         return;
     }
     QString poutput(p.readAllStandardOutput());
     qDebug() << poutput;
-
+    */
 
     QLineSeries *sp = new QLineSeries();
     QChart *newchart = new QChart();
 
 
-    updateGraphPoint(1,2,sp);
+    QProcess p3;
+    QStringList params3;
+    params3 << path << "historical" << ticker;
+    p3.start("python.exe", params3);
+
+    //Check the process thread
+    if(!p3.waitForFinished(-1)) {
+        qDebug() << "Error with process";
+        return;
+    }
+
+    QString graphline = p3.readLine();
+
+    QDateTime xValue;
+
+    while(!graphline.isEmpty()) {
+        QStringList graphlist = graphline.left(graphline.size() - 4).split(' ');
+
+        //seperate year, date and month
+        QStringList datelist = graphlist[0].split('-');
+        xValue.setDate(QDate(datelist[0].toInt(),datelist[1].toInt(),datelist[2].toInt()));
+        qreal yValue = graphlist[1].toDouble();
+        sp->append(xValue.toMSecsSinceEpoch(), yValue);
+
+        graphline = p3.readLine();
+    }
+
+    newchart->addSeries(sp);
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setFormat("MM-dd-yyyy");
+    newchart->addAxis(axisX, Qt::AlignBottom);
+    sp->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    newchart->addAxis(axisY, Qt::AlignLeft);
+    sp->attachAxis(axisY);
     //TODO: Once get data,use a for loop to call UpdateGraphPoint() to plot sp
     newchart->setTitle("Stock Price");
-    newchart->addSeries(sp);
-    newchart->createDefaultAxes();
+    //newchart->createDefaultAxes();
     ui->currentQcharts->setChart(newchart);
 
 }
