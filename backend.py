@@ -327,8 +327,12 @@ def search(query, sdate, edate):
     #check for date validity
     sdatevals = sdate.split('-')
     if len(sdatevals) == 3:
-        # TODO: Check to make sure date vals are good
-        x=5
+		print(sdatevals[0],sdatevals[1],sdatevals[2]);
+		if ( (len(sdatevals[0])>= 1 and  len(sdatevals[0]) <= 4) and (int(sdatevals[1])>=1 and int(sdatevals[1]) <= 12) and (int(sdatevals[2]) >=1 and int(sdatevals[2]) <= 31)):
+			x = 1
+		else :
+			print "fail1";
+			return
     else:
         if sdate != "sot":
             #print sdate
@@ -336,8 +340,11 @@ def search(query, sdate, edate):
 
     edatevals = edate.split('-')
     if len(edatevals) == 3:
-        # TODO: Check to make sure date vals are good
-        x=5
+		if ( (len(edatevals[0])>= 1 and  len(edatevals[0]) <= 4) and (int(edatevals[1])>=1 and int(edatevals[1]) <= 12) and (int(edatevals[2]) >=1 and int(edatevals[2]) <= 31)):
+			x = 1
+		else :
+			print "fail2";
+			return
     else:
         if edate != "present":
             #print edate
@@ -346,18 +353,16 @@ def search(query, sdate, edate):
     vals = query.split(',')
     low = float(vals[0])
     high = float(vals[1])
-
-    # Open database connection
-    
-
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
-    #cursor.execute('SELECT * FROM stocks WHERE %s < close AND close < %s ORDER BY timestamp ASC', [low,high])
-    #cursor.execute('WITH ranked AS (SELECT m.* , ROW_NUMBER())', [low,high])
-    #cursor.execute('SELECT ticker, timestamp FROM (SELECT ticker, MAX(timestamp) FROM stocks GROUP BY ticker DESC ) as ticks WHERE %s < close AND close < %s ORDER BY ticker', [low,high])
-    #cursor.execute('SELECT * FROM stocks WHERE %s < close AND close < %s ORDER BY timestamp ASC', [low,high])    
-    # fetch all of the rows from the query
-    cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s GROUP BY ticker ORDER BY timestamp', [low, high])
+    cursor = conn.cursor();
+    if (sdate == "sot" and edate == "present") :
+        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s GROUP BY ticker ORDER BY ticker', [low, high])
+    if (sdate == "sot" and edate != "present") :
+        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, edate])
+    if (sdate != "sot" and edate == "present") :
+        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate]) 
+    if (sdate != "sot" and edate != "present") :
+		cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate, edate]) 		
     data = cursor.fetchall() 
     # print the rows
 
@@ -414,7 +419,7 @@ def iextest():
 def main():
     #get_historical("aapl");
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
-
+    #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
     request = prefix + '/stock/market/batch?types=quote&symbols=AAPL,UTX'
     print request
