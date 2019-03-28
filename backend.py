@@ -320,6 +320,10 @@ def graph(stock_symbol,  timeframe):
     # print "testgraph"
     print plot_data
 
+def parse(input):
+    def judge(row):
+        return true
+    return judge
 
 # Takes a search query and searches the database - should support "sot" or "YYYY-MM-DD" for sdate and "present" or "YYYY-MM-DD" for edate
 def search(query, sdate, edate):
