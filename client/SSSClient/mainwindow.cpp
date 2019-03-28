@@ -111,7 +111,7 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     qDebug() << poutput;
 
-    if(poutput.compare("\r\n[\'{}\']\r\n") == 0) {
+    if(poutput.compare("") == 0) {
         ui->stockname->setText(stockstring.append(" - Stock not found"));
         ui->pageswitcher->setCurrentWidget(ui->singleview);
         return;
