@@ -36,7 +36,6 @@ private:
     void graph(QString timeframe);
     QString ticker;
     QProcess * updateprocess;
-
 };
 
 #endif // MAINWINDOW_H

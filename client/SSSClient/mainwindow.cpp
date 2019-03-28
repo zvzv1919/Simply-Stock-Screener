@@ -83,6 +83,8 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     params2 << path << "historical" << stockstring;
     p2.start("python.exe", params2);
 
+
+
     // Prepare data screen
     ui->stockname->setText("");
     for(int i = 0; i < ui->currentdatatable1->rowCount(); i++) {
@@ -94,6 +96,7 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     ui->historicaldatatable->clearContents();
     ui->historicaldatatable->setRowCount(0);
+    ui->historicaldatatable->setMinimumHeight(0);
 
     // Await current data process return and fill table with data -
     if(!p.waitForFinished(-1)) {
@@ -116,7 +119,6 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     poutput = poutput.mid(ind+1, poutput.length() - ind - 1 - 3);
     poutput = poutput.remove('\'');
     QStringList datalist = poutput.split(", ");
-    qDebug() << "4";
     ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(datalist[4]));
 
     ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(datalist[8] + " (" + datalist[9] + ")"));
@@ -130,17 +132,30 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     ui->stockname->setText(stockstring + " - " + datalist[6]);
 
-    // Await historical data process return and fill table with data
+    // Wait for historical process to be finished
     if(!p2.waitForFinished(-1)) {
         qDebug() << "Error with process";
         ui->pageswitcher->setCurrentWidget(ui->singleview);
         return;
     }
-    QString poutput2(p2.readAllStandardOutput());
 
-    qDebug() << poutput2;
+    QString histline = p2.readLine();
+    while(!histline.isEmpty()) {
+        QStringList histlist = histline.left(histline.size() - 4).split(' ');
+        int rowcnt = ui->historicaldatatable->rowCount();
+        ui->historicaldatatable->insertRow(rowcnt);
+        ui->historicaldatatable->setItem(rowcnt,0, new QTableWidgetItem(histlist[0]));
+        ui->historicaldatatable->setItem(rowcnt,1, new QTableWidgetItem(histlist[1]));
+        histline = p2.readLine();
+    }
 
-    // TODO: Populate table with results
+    // Resize historical data table to contents
+    if(ui->historicaldatatable->rowCount() > 0) {
+        int height = ui->historicaldatatable->horizontalHeader()->height() + ui->historicaldatatable->rowCount() * ui->historicaldatatable->verticalHeader()->sectionSize(0);
+        ui->historicaldatatable->setMinimumHeight(height);
+    }
+
+    // TODO: Write lines to table
 
     // Switch to single view
     ui->pageswitcher->setCurrentWidget(ui->singleview);
@@ -153,12 +168,9 @@ void MainWindow::search() {
     ui->searchbar->clear();
     ui->startdate->clear();
     ui->enddate->clear();
-    qDebug() << "1";
     // Check if search is for single stock or list
     if(query.isUpper()) {
-        qDebug() << "2";
-        QListWidgetItem stock(query);
-        qDebug() << "3";// Deleted upon return from this function - Be careful with asynchronization
+        QListWidgetItem stock(query); // Deleted upon return from this function - Be careful with asynchronization
         viewStockDetails(&stock);
         return;
     }
@@ -336,4 +348,3 @@ void MainWindow::updateDatabaseButton(int code, QProcess::ExitStatus status) {
     }
     delete updateprocess;
 }
-

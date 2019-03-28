@@ -451,6 +451,8 @@ def main():
             exit(1)
     if sys.argv[1] == "single":
         singlestock(sys.argv[2])
+    elif sys.argv[1] == "historical":
+        get_historical(sys.argv[2])
     elif sys.argv[1] == "search":
         if len(sys.argv) < 5:
             print "format error"
