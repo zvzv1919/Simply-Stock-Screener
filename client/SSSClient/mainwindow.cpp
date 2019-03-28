@@ -98,6 +98,8 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     ui->historicaldatatable->setRowCount(0);
     ui->historicaldatatable->setMinimumHeight(0);
 
+    clearGraph();
+
     // Await current data process return and fill table with data -
     if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
