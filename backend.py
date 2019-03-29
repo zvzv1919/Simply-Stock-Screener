@@ -84,6 +84,8 @@ def update():
         for item in data:
             try:
                 print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
+                vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
+                add_stock(vals)
             except KeyError:
                 print ""
 
