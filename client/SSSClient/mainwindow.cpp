@@ -256,13 +256,13 @@ void MainWindow::graph(QString timeframe) {
 
     // Create process to retrieve data
 
-    //QProcess p;
+    QProcess p;
     QString path = QFileInfo(".").absolutePath();
     QStringList params;
     path += "/../backend.py";
-    /*params << path << "graph" << ticker << timeframe;
+    params << path << "graph" << ticker << timeframe;
     p.start("python.exe", params);
-    */
+
     clearGraph();
     // TODO: clear graph
     // Await process return and fill list with data
@@ -278,18 +278,18 @@ void MainWindow::graph(QString timeframe) {
     QChart *newchart = new QChart();
 
 
-    QProcess p3;
+    /*QProcess p3;
     QStringList params3;
     params3 << path << "historical" << ticker;
-    p3.start("python.exe", params3);
+    p3.start("python.exe", params3);*/
 
     //Check the process thread
-    if(!p3.waitForFinished(-1)) {
+    if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
         return;
     }
 
-    QString graphline = p3.readLine();
+    QString graphline = p.readLine();
 
     QDateTime xValue;
 
@@ -302,7 +302,7 @@ void MainWindow::graph(QString timeframe) {
         qreal yValue = graphlist[1].toDouble();
         sp->append(xValue.toMSecsSinceEpoch(), yValue);
 
-        graphline = p3.readLine();
+        graphline = p.readLine();
     }
 
     newchart->addSeries(sp);
