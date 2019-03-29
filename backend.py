@@ -5,6 +5,7 @@ import certifi
 import csv
 import sys
 import datetime
+import json
 import pymysql
 import requests
 import mysql.connector
@@ -63,9 +64,38 @@ company_list=[]
 now=datetime.datetime.now()
 # update the database
 def update():
+    with open('companylist.csv') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            else:
+                # print row[0]
+                company_list.append(row[0])
+                line_count += 1
+   # print company_list
+    # TODO: complete the testing and intraday data filling
+    for symbol in company_list:
+        request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
+        # print request
+        dataRaw = requests.get(request)
+        data = (json.loads(dataRaw.text))["chart"]
+        for item in data:
+            print symbol, item['date'], item['open']
+
+
+
     # use iextest() as an example
     #time.sleep(5)
-    return
+    # symbol='aapl'
+    # request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
+    # #print request
+    # dataRaw = requests.get(request)
+    # data=(json.loads(d\ataRaw.text))["chart"]
+    # for item in data:
+    #     print item
+    # return
 """def update():
     with open('companylist.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -391,16 +421,17 @@ def gain_value(percentage, gt, sdate, edate):
     cursorOld = connOld.cursor();
     if (sdate == "sot"):
         cursorOld.execute(
-            'SELECT ticker, min(timestamp), close FROM stocks GROUP BY ticker ORDER BY ticker')
+            'SELECT s.ticker, s.timestamp, s.close FROM stocks s WHERE s.timestamp = '
+            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker)')
     if (sdate != "sot"):
         cursorOld.execute(
             'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
     dataOld = cursorOld.fetchall()
     connOld.close()
-    # for row in dataOld:
-    #     print row
-    # for row in dataNew:
-    #     print row
+    for row in dataOld:
+        print row
+    for row in dataNew:
+        print row
     percentageVal = float(percentage)
     for rowNew in dataNew:
         for rowOld in dataOld:
