@@ -85,7 +85,7 @@ def update():
             try:
                 print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
             except KeyError:
-                continue
+                print ""
 
 
 
