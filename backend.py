@@ -82,7 +82,10 @@ def update():
         dataRaw = requests.get(request)
         data = (json.loads(dataRaw.text))["chart"]
         for item in data:
-            print symbol, item['date'], item['open']
+            try:
+                print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
+            except KeyError:
+                continue
 
 
 
@@ -408,10 +411,12 @@ def gain_value(percentage, gt, sdate, edate):
     cursorNew = connNew.cursor();
     if (edate == "present"):
         cursorNew.execute(
-            'SELECT ticker, max(timestamp), close FROM stocks GROUP BY ticker ORDER BY ticker')
+            'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
+            '(select max(st.timestamp) from stocks st where s.ticker = st.ticker)')
     if (edate != "present"):
         cursorNew.execute(
-            'SELECT ticker, max(timestamp), close FROM stocks WHERE timestamp <= %s GROUP BY ticker ORDER BY ticker', [edate])
+            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
+            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
     dataNew = cursorNew.fetchall()
     connNew.close()
 
@@ -421,17 +426,19 @@ def gain_value(percentage, gt, sdate, edate):
     cursorOld = connOld.cursor();
     if (sdate == "sot"):
         cursorOld.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s WHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker)')
+           'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
+           '(select min(st.timestamp) from stocks st where s.ticker = st.ticker)')
     if (sdate != "sot"):
         cursorOld.execute(
-            'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
+            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
+            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+           # 'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
     dataOld = cursorOld.fetchall()
     connOld.close()
-    for row in dataOld:
-        print row
-    for row in dataNew:
-        print row
+    # for row in dataOld:
+    #     print row
+    # for row in dataNew:
+    #     print row
     percentageVal = float(percentage)
     for rowNew in dataNew:
         for rowOld in dataOld:
