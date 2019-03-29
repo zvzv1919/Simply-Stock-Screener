@@ -80,7 +80,10 @@ def update():
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
         # print request
         dataRaw = requests.get(request)
-        data = (json.loads(dataRaw.text))["chart"]
+        try:
+            data = (json.loads(dataRaw.text))["chart"]
+        except ValueError:
+            continue
         for item in data:
             try:
                 #print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
