@@ -378,12 +378,12 @@ void MainWindow::updateGraphPoint(double time, double price, QLineSeries* ss){
 }
 
 void MainWindow::updateDatabaseButton(int code, QProcess::ExitStatus status) {
-    if(code == 0) {
+    //if(code == 0) {
         ui->updatebutton->setText("Update Database");
         ui->updatebutton->setEnabled(true);
-    }
+    /*}
     else {
         ui->updatebutton->setText("Database Update Failed");
-    }
+    }*/
     delete updateprocess;
 }
