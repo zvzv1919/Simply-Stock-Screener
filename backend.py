@@ -314,13 +314,14 @@ def graph(stock_symbol,  timeframe):
                     or now.month > 7 and month < now.month - 6 \
                     or now.month == 7 and month == 12 \
                     or now.month <= 6 and month < now.month + 6 and month > now.month\
-                    or count >= max_count or abs(day-prevday)==1:
+                    or count >= max_count:
                 break
             else:
+                if abs(day-prevday)!=1:
                 # plot_data.append([row[1], row[5]])
-                print (row[1]),
-                print (row[5])
-                count+=1
+                    print (row[1]),
+                    print (row[5])
+                    count+=1
                 prevday=day
     elif timeframe=='1 year':
         # print '1 year'
@@ -333,27 +334,26 @@ def graph(stock_symbol,  timeframe):
             if day < now.day and month == now.month and year < now.year \
                     or month < now.month and year < now.year and now.month > 1\
                     or month <= 12 and now.month == 1 and year < now.year\
-                    or count >= max_count or abs(day - prevday) == 1:
+                    or count >= max_count:
                 break
             else:
+                if abs(day-prevday)!=1:
                 # plot_data.append([row[1], row[5]])
-                print(row[1]),
-                print(row[5])
-                count += 1
+                    print(row[1]),
+                    print(row[5])
+                    count += 1
                 prevday = day
     elif timeframe=='all':
         count = 0
         prevmonth = 0
         for row in data:
             month = extractDate(row[1], 'MONTH')
-            if month == prevmonth:
-                break
-            else:
+            if month != prevmonth:
                 # plot_data.append([row[1], row[5]])
                 print(row[1]),
                 print(row[5])
                 count += 1
-                prevmonth = month
+            prevmonth = month
         # print 'all'
     else:
         print 'Invalid timeframe'
