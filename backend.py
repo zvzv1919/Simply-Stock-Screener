@@ -8,6 +8,7 @@ import datetime
 import pymysql
 import requests
 import mysql.connector
+import time
 
 # buffer = StringIO()
 # c = pycurl.Curl()
@@ -63,6 +64,7 @@ now=datetime.datetime.now()
 # update the database
 def update():
     # use iextest() as an example
+    #time.sleep(5)
     return
 """def update():
     with open('companylist.csv') as csv_file:

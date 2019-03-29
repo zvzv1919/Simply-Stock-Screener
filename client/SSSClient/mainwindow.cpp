@@ -98,6 +98,8 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     ui->historicaldatatable->setRowCount(0);
     ui->historicaldatatable->setMinimumHeight(0);
 
+    clearGraph();
+
     // Await current data process return and fill table with data -
     if(!p.waitForFinished(-1)) {
         qDebug() << "Error with process";
@@ -109,7 +111,7 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     qDebug() << poutput;
 
-    if(poutput.compare("\r\n[\'{}\']\r\n") == 0) {
+    if(poutput.compare("") == 0) {
         ui->stockname->setText(stockstring.append(" - Stock not found"));
         ui->pageswitcher->setCurrentWidget(ui->singleview);
         return;
@@ -306,6 +308,7 @@ void MainWindow::graph(QString timeframe) {
     newchart->addSeries(sp);
 
     QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setTickCount(10);
     axisX->setFormat("MM-dd-yyyy");
     newchart->addAxis(axisX, Qt::AlignBottom);
     sp->attachAxis(axisX);
@@ -314,7 +317,7 @@ void MainWindow::graph(QString timeframe) {
     newchart->addAxis(axisY, Qt::AlignLeft);
     sp->attachAxis(axisY);
     //TODO: Once get data,use a for loop to call UpdateGraphPoint() to plot sp
-    newchart->setTitle("Stock Price");
+    newchart->setTitle(ticker);
     //newchart->createDefaultAxes();
     ui->currentQcharts->setChart(newchart);
 
