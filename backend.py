@@ -328,14 +328,121 @@ def graph(stock_symbol,  timeframe):
     # print "testgraph"
     # print plot_data
 
-def parse(input):
-    def judge(row):
-        return true
-    return judge
+def parse(query):
+
+    def judge(symbol):
+        return True
+    tokens=query.split(' ')
+    # print(tokens)
+    if(tokens[0]=='GAIN'):
+        return 'GAIN'
+    if(',' in tokens[0]):
+        return 'PRICE'
+    else:
+        return judge
+
+def gain_value(percentage, gt, sdate, edate):
+    sdatevals = sdate.split('-')
+    if len(sdatevals) == 3:
+        # print(sdatevals[0],sdatevals[1],sdatevals[2]);
+        if ((len(sdatevals[0]) >= 1 and len(sdatevals[0]) <= 4) and (
+                int(sdatevals[1]) >= 1 and int(sdatevals[1]) <= 12) and (
+                int(sdatevals[2]) >= 1 and int(sdatevals[2]) <= 31)):
+            x = 1
+        else:
+            print "fail1";
+            return
+    else:
+        if sdate != "sot":
+            # print sdate
+            return
+
+    edatevals = edate.split('-')
+    if len(edatevals) == 3:
+        if ((len(edatevals[0]) >= 1 and len(edatevals[0]) <= 4) and (
+                int(edatevals[1]) >= 1 and int(edatevals[1]) <= 12) and (
+                int(edatevals[2]) >= 1 and int(edatevals[2]) <= 31)):
+            x = 1
+        else:
+            print "fail2";
+            return
+    else:
+        if edate != "present":
+            # print edate
+            return
+
+    connNew = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test', database='stock_info',
+                                   auth_plugin='mysql_native_password')
+    cursorNew = connNew.cursor();
+    if (edate == "present"):
+        cursorNew.execute(
+            'SELECT ticker, max(timestamp), close FROM stocks GROUP BY ticker ORDER BY ticker')
+    if (edate != "present"):
+        cursorNew.execute(
+            'SELECT ticker, max(timestamp), close FROM stocks WHERE timestamp <= %s GROUP BY ticker ORDER BY ticker', [edate])
+    dataNew = cursorNew.fetchall()
+    connNew.close()
+
+    # print the rows
+    connOld = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test', database='stock_info',
+                                      auth_plugin='mysql_native_password')
+    cursorOld = connOld.cursor();
+    if (sdate == "sot"):
+        cursorOld.execute(
+            'SELECT ticker, min(timestamp), close FROM stocks GROUP BY ticker ORDER BY ticker')
+    if (sdate != "sot"):
+        cursorOld.execute(
+            'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
+    dataOld = cursorOld.fetchall()
+    connOld.close()
+    # for row in dataOld:
+    #     print row
+    # for row in dataNew:
+    #     print row
+    percentageVal = float(percentage)
+    for rowNew in dataNew:
+        for rowOld in dataOld:
+            if rowOld[0]==rowNew[0]:
+                priceNew=float(rowNew[2])
+                priceOld=float(rowOld[2])
+                # print "priceNew:",priceNew
+                # print "priceOld:",priceOld, percentage
+                #print ((priceNew-priceOld)*100/priceOld)>percentage
+                if(priceOld==0):
+                    print rowNew[0]
+                elif gt and (priceNew-priceOld)*100/priceOld>percentageVal or not gt and (priceNew-priceOld)*100/priceOld<percentageVal:
+                    print rowNew[0]
+
+
+    # for row in dataNew:
+    #     print (row[0])
+    #    print (row[0], row[1], row[2], row[3], row[4])
+    #    s = s + str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) \
+    #        + ' ' + str(row[3]) + ' ' + str(row[4]) + '<br />'
+
+    # disconnect from server
+
+
+    connOld.close()
 
 # Takes a search query and searches the database - should support "sot" or "YYYY-MM-DD" for sdate and "present" or "YYYY-MM-DD" for edate
 def search(query, sdate, edate):
-    
+
+    # Check if the condition is "Gaining value". If so, do parsing here
+    condition=parse(query)
+    if condition=="GAIN":
+        tokens=query.split(' ')
+        gain_value(tokens[2], tokens[1]=='>', sdate, edate)
+        return
+    # TODO:Remove after sprint2
+    if condition=="PRICE":
+        # do nothing
+        print("")
+    #TODO:Implement in sprint 3
+    else:
+        print("Unsupported query")
+        return
+
     #check for date validity
     sdatevals = sdate.split('-')
     if len(sdatevals) == 3:
@@ -372,10 +479,10 @@ def search(query, sdate, edate):
     if (sdate == "sot" and edate != "present") :
         cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, edate])
     if (sdate != "sot" and edate == "present") :
-        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate]) 
+        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate])
     if (sdate != "sot" and edate != "present") :
-		cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate, edate]) 		
-    data = cursor.fetchall() 
+		cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate, edate])
+    data = cursor.fetchall()
     # print the rows
 
     for row in data:
