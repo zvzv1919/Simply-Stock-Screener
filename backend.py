@@ -148,7 +148,23 @@ def get_price(stock_symbol):
 		response = urllib.urlopen(url)
 		data = json.loads(response.read())
 		print data
-		sys.stdout.flush()		
+		sys.stdout.flush()
+   
+		request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=1' % stock_symbol
+		# print request
+		dataRaw = requests.get(request)
+		data = (json.loads(dataRaw.text))["chart"]
+
+		for item in data:
+				print stock_symbol, item['date'], item['open'], item['high'], item['low'], item['close']
+				vals = [stock_symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
+				conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+				cursor = conn.cursor()
+				cursor.execute("DELETE from stocks TICKER = %s AND DATE = %s", stock_symbol, item['date'] )
+				conn.commit();
+				conn.close();
+                add_stock(vals)
+		
 		
 # Get stock info (current day)
 def get_current(stock_symbol):
