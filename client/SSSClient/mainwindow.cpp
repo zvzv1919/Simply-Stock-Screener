@@ -31,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
     headerlist << "Date" << "Price";
     ui->historicaldatatable->setHorizontalHeaderLabels(headerlist);
 
+    updateprocess = Q_NULLPTR;
+    historicalprocess = Q_NULLPTR;
+
     QLineSeries *defaultSeries = new QLineSeries();
     QChart *chart = new QChart();
 
@@ -66,6 +69,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::viewStockDetails(QListWidgetItem * stock) {
+
+    // Don't allow viewing a new stock if historical data is still running
+    if(historicalprocess != Q_NULLPTR) {
+        return;
+    }
+
     QString stockstring = stock->text();
     ticker = stockstring;
 
@@ -77,15 +86,21 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     params << path << "single" << stockstring;
     p.start("python.exe", params);
 
+    // Prepare historical data screen
+    ui->historicaldatatable->clearContents();
+    ui->historicaldatatable->setRowCount(0);
+    ui->historicaldatatable->setMinimumHeight(0);
+
     // Create process to retrieve historical data
-    QProcess p2;
+    historicalprocess = new QProcess(this);
     QStringList params2;
     params2 << path << "historical" << stockstring;
-    p2.start("python.exe", params2);
 
+    connect(historicalprocess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(updateHistoricalData(int, QProcess::ExitStatus)));
 
+    historicalprocess->start("python.exe", params2);
 
-    // Prepare data screen
+    // Prepare current data screen and graph
     ui->stockname->setText("");
     for(int i = 0; i < ui->currentdatatable1->rowCount(); i++) {
         ui->currentdatatable1->setItem(i,1, nullptr);
@@ -93,10 +108,6 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     for(int i = 0; i < ui->currentdatatable2->rowCount(); i++) {
         ui->currentdatatable2->setItem(i,1, nullptr);
     }
-
-    ui->historicaldatatable->clearContents();
-    ui->historicaldatatable->setRowCount(0);
-    ui->historicaldatatable->setMinimumHeight(0);
 
     clearGraph();
 
@@ -134,36 +145,12 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     ui->stockname->setText(stockstring + " - " + datalist[6]);
 
-    // Wait for historical process to be finished
-    if(!p2.waitForFinished(-1)) {
-        qDebug() << "Error with process";
-        ui->pageswitcher->setCurrentWidget(ui->singleview);
-        return;
-    }
-
-    QString histline = p2.readLine();
-    while(!histline.isEmpty()) {
-        QStringList histlist = histline.left(histline.size() - 4).split(' ');
-        int rowcnt = ui->historicaldatatable->rowCount();
-        ui->historicaldatatable->insertRow(rowcnt);
-        ui->historicaldatatable->setItem(rowcnt,0, new QTableWidgetItem(histlist[0]));
-        ui->historicaldatatable->setItem(rowcnt,1, new QTableWidgetItem(histlist[1]));
-        histline = p2.readLine();
-    }
-
-    // Resize historical data table to contents
-    if(ui->historicaldatatable->rowCount() > 0) {
-        int height = ui->historicaldatatable->horizontalHeader()->height() + ui->historicaldatatable->rowCount() * ui->historicaldatatable->verticalHeader()->sectionSize(0);
-        ui->historicaldatatable->setMinimumHeight(height);
-    }
-
-    // TODO: Write lines to table
-
     // Switch to single view
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }
 
 void MainWindow::search() {
+
     QString query = ui->searchbar->text();
     QString sdate = ui->startdate->text();
     QString edate = ui->enddate->text();
@@ -386,4 +373,27 @@ void MainWindow::updateDatabaseButton(int code, QProcess::ExitStatus status) {
         ui->updatebutton->setText("Database Update Failed");
     }*/
     delete updateprocess;
+}
+
+void MainWindow::updateHistoricalData(int code, QProcess::ExitStatus status) {
+    if(code == 0) {
+        QString histline = historicalprocess->readLine();
+        while(!histline.isEmpty()) {
+            QStringList histlist = histline.left(histline.size() - 4).split(' ');
+            int rowcnt = ui->historicaldatatable->rowCount();
+            ui->historicaldatatable->insertRow(rowcnt);
+            ui->historicaldatatable->setItem(rowcnt,0, new QTableWidgetItem(histlist[0]));
+            ui->historicaldatatable->setItem(rowcnt,1, new QTableWidgetItem(histlist[1]));
+            histline = historicalprocess->readLine();
+        }
+
+        // Resize historical data table to contents
+        if(ui->historicaldatatable->rowCount() > 0) {
+            int height = ui->historicaldatatable->horizontalHeader()->height() + ui->historicaldatatable->rowCount() * ui->historicaldatatable->verticalHeader()->sectionSize(0);
+            ui->historicaldatatable->setMinimumHeight(height);
+        }
+    }
+
+    delete historicalprocess;
+    historicalprocess = Q_NULLPTR;
 }
