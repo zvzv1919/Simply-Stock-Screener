@@ -10,6 +10,7 @@ import pymysql
 import requests
 import mysql.connector
 import time
+import urllib
 
 # buffer = StringIO()
 # c = pycurl.Curl()
@@ -137,7 +138,18 @@ def update():
         print row
 """
 
+def get_live(stock_symbol):
+	while True:
+		get_price(stock_symbol)
+		time.sleep(30)
 
+def get_price(stock_symbol):
+		url = 'https://api.iextrading.com/1.0/stock/%s/price' % stock_symbol
+		response = urllib.urlopen(url)
+		data = json.loads(response.read())
+		print data
+		sys.stdout.flush()		
+		
 # Get stock info (current day)
 def get_current(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
@@ -582,7 +594,7 @@ def iextest():
     for row in reader:
         print row
 def main():
-    #get_historical("aapl");
+    get_live("aapl");
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
