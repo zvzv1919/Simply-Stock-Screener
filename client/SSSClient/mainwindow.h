@@ -32,12 +32,14 @@ public slots:
     void updateGraphPoint(double time, double price, QLineSeries* ss);
     void updateDatabaseButton(int code, QProcess::ExitStatus status);
     void updateHistoricalData(int code, QProcess::ExitStatus status);
+    void updateRealtimeData();
 private:
     Ui::MainWindow *ui;
     void graph(QString timeframe);
     QString ticker;
     QProcess * updateprocess;
     QProcess * historicalprocess;
+    QProcess * realtimeprocess;
 };
 
 #endif // MAINWINDOW_H

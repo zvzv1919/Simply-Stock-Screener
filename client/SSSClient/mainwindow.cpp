@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateprocess = Q_NULLPTR;
     historicalprocess = Q_NULLPTR;
+    realtimeprocess = Q_NULLPTR;
 
     QLineSeries *defaultSeries = new QLineSeries();
     QChart *chart = new QChart();
@@ -132,24 +133,40 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
     poutput = poutput.mid(ind+1, poutput.length() - ind - 1 - 3);
     poutput = poutput.remove('\'');
     QStringList datalist = poutput.split(", ");
-    ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(datalist[4]));
+    ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(/*datalist[4]*/ "Awaiting Realtime Data"));
 
-    ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(datalist[8] + " (" + datalist[9] + ")"));
+    ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(/*datalist[8] + " (" + datalist[9] + ")"*/  "Awaiting Realtime Data"));
 
     ui->currentdatatable1->setItem(2,1, new QTableWidgetItem(datalist[1]));
-    ui->currentdatatable1->setItem(3,1, new QTableWidgetItem(datalist[2]));
-    ui->currentdatatable1->setItem(4,1, new QTableWidgetItem(datalist[5]));
+    ui->currentdatatable1->setItem(3,1, new QTableWidgetItem(/*datalist[2]*/  "Awaiting Realtime Data"));
+    ui->currentdatatable1->setItem(4,1, new QTableWidgetItem(/*datalist[5]*/  "Awaiting Realtime Data"));
 
     ui->currentdatatable2->setItem(2,1, new QTableWidgetItem(datalist[7]));
-    ui->currentdatatable2->setItem(3,1, new QTableWidgetItem(datalist[3]));
+    ui->currentdatatable2->setItem(3,1, new QTableWidgetItem(/*datalist[3]*/  "Awaiting Realtime Data"));
 
     ui->stockname->setText(stockstring + " - " + datalist[6]);
+
+    // Start the realtime data process
+    realtimeprocess = new QProcess(this);
+    QStringList params3;
+    params3 << path << "live" << stockstring;
+
+    connect(realtimeprocess, SIGNAL(readyReadStandardOutput()), this, SLOT(updateRealtimeData()));
+
+    realtimeprocess->start("python.exe", params3);
+
 
     // Switch to single view
     ui->pageswitcher->setCurrentWidget(ui->singleview);
 }
 
 void MainWindow::search() {
+
+    if(realtimeprocess != Q_NULLPTR) {
+        realtimeprocess->kill();
+        delete realtimeprocess;
+        realtimeprocess = Q_NULLPTR;
+    }
 
     QString query = ui->searchbar->text();
     QString sdate = ui->startdate->text();
@@ -396,4 +413,38 @@ void MainWindow::updateHistoricalData(int code, QProcess::ExitStatus status) {
 
     delete historicalprocess;
     historicalprocess = Q_NULLPTR;
+}
+
+void MainWindow::updateRealtimeData() {
+    // Just in case
+    if(realtimeprocess == Q_NULLPTR) {
+        return;
+    }
+
+    QString poutput(realtimeprocess->readAllStandardOutput());
+
+    qDebug() << poutput;
+
+    if(poutput.compare("") == 0) {
+        return;
+    }
+
+    QStringList plist = poutput.split("\r\n", QString::SkipEmptyParts);
+
+    for(int i = 0; i < plist.length(); i++) {
+        qDebug() << plist.at(i);
+        QStringList psubstrlist = plist.at(i).split(' ', QString::SkipEmptyParts);
+        if(psubstrlist.at(0).compare("p") == 0) {
+            ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(psubstrlist.at(1)));
+        }
+        else {
+            ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(psubstrlist.at(1) + " (" + psubstrlist.at(2) + "%)"));
+
+            ui->currentdatatable1->setItem(3,1, new QTableWidgetItem(psubstrlist.at(3)));
+            ui->currentdatatable1->setItem(4,1, new QTableWidgetItem(psubstrlist.at(4)));
+
+            ui->currentdatatable2->setItem(3,1, new QTableWidgetItem(psubstrlist.at(5)));
+        }
+    }
+
 }

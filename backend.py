@@ -139,33 +139,34 @@ def update():
 """
 
 def get_live(stock_symbol):
-	while True:
-		get_price(stock_symbol)
-		time.sleep(30)
+    while True:
+        get_realtime(stock_symbol)
+        time.sleep(30)
 
-def get_price(stock_symbol):
-		url = 'https://api.iextrading.com/1.0/stock/%s/price' % stock_symbol
-		response = urllib.urlopen(url)
-		data = json.loads(response.read())
-		print data
-		sys.stdout.flush()
+def get_realtime(stock_symbol):
+        url = 'https://api.iextrading.com/1.0/stock/%s/price' % stock_symbol
+        response = urllib.urlopen(url)
+        data = json.loads(response.read())
+        print "p", data
    
-		request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=1' % stock_symbol
-		# print request
-		dataRaw = requests.get(request)
-		data = (json.loads(dataRaw.text))["chart"]
+        request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=1' % stock_symbol
+        # print request
+        dataRaw = requests.get(request)
+        data = (json.loads(dataRaw.text))["chart"]
 
-		for item in data:
-				print stock_symbol, item['date'], item['open'], item['high'], item['low'], item['close']
-				vals = [stock_symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
-				conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-				cursor = conn.cursor()
-				cursor.execute("DELETE from stocks TICKER = %s AND DATE = %s", stock_symbol, item['date'] )
-				conn.commit();
-				conn.close();
+        for item in data:
+                print "o", item['change'], item['changePercent'], item['high'], item['volume'], item['low']
+                vals = [stock_symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
+                conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+                cursor = conn.cursor()
+                cursor.execute("DELETE from stocks TICKER = %s AND DATE = %s", stock_symbol, item['date'] )
+                conn.commit();
+                conn.close();
                 add_stock(vals)
-		
-		
+
+        sys.stdout.flush()
+        
+        
 # Get stock info (current day)
 def get_current(stock_symbol):
     request = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s' \
@@ -213,7 +214,7 @@ def get_stock(ticker):
 
     conn.commit();
     conn.close();
-	
+    
 def get_historical(ticker):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
@@ -221,22 +222,22 @@ def get_historical(ticker):
     cursor.execute("SELECT * from stocks WHERE ticker = %s ORDER by timestamp DESC", [ticker])
     data = cursor.fetchall()
     for row in data:
-		
-		print (row[1]),
-		print (row[5])
+        
+        print (row[1]),
+        print (row[5])
 
     conn.commit();
     conn.close();
-	
+    
 def search_timeframe(start, end, low, high):
-	conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-	cursor = conn.cursor();
-	cursor.execute('SELECT * FROM stocks WHERE %s <= timestamp AND timestamp <= %s AND close >= %s AND close <= %s GROUP BY ticker ', [start,end, low,high])
-	data = cursor.fetchall()
-	for row in data:
-		print (row[0])
-	conn.commit();
-	conn.close();
+    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    cursor = conn.cursor();
+    cursor.execute('SELECT * FROM stocks WHERE %s <= timestamp AND timestamp <= %s AND close >= %s AND close <= %s GROUP BY ticker ', [start,end, low,high])
+    data = cursor.fetchall()
+    for row in data:
+        print (row[0])
+    conn.commit();
+    conn.close();
 
 # Retrieve current data for single stock, return it to be displayed, and
 # update database with historical daily price info
@@ -520,12 +521,12 @@ def search(query, sdate, edate):
     #check for date validity
     sdatevals = sdate.split('-')
     if len(sdatevals) == 3:
-		#print(sdatevals[0],sdatevals[1],sdatevals[2]);
-		if ( (len(sdatevals[0])>= 1 and  len(sdatevals[0]) <= 4) and (int(sdatevals[1])>=1 and int(sdatevals[1]) <= 12) and (int(sdatevals[2]) >=1 and int(sdatevals[2]) <= 31)):
-			x = 1
-		else :
-			print "fail1";
-			return
+        #print(sdatevals[0],sdatevals[1],sdatevals[2]);
+        if ( (len(sdatevals[0])>= 1 and  len(sdatevals[0]) <= 4) and (int(sdatevals[1])>=1 and int(sdatevals[1]) <= 12) and (int(sdatevals[2]) >=1 and int(sdatevals[2]) <= 31)):
+            x = 1
+        else :
+            print "fail1";
+            return
     else:
         if sdate != "sot":
             #print sdate
@@ -533,11 +534,11 @@ def search(query, sdate, edate):
 
     edatevals = edate.split('-')
     if len(edatevals) == 3:
-		if ( (len(edatevals[0])>= 1 and  len(edatevals[0]) <= 4) and (int(edatevals[1])>=1 and int(edatevals[1]) <= 12) and (int(edatevals[2]) >=1 and int(edatevals[2]) <= 31)):
-			x = 1
-		else :
-			print "fail2";
-			return
+        if ( (len(edatevals[0])>= 1 and  len(edatevals[0]) <= 4) and (int(edatevals[1])>=1 and int(edatevals[1]) <= 12) and (int(edatevals[2]) >=1 and int(edatevals[2]) <= 31)):
+            x = 1
+        else :
+            print "fail2";
+            return
     else:
         if edate != "present":
             #print edate
@@ -555,7 +556,7 @@ def search(query, sdate, edate):
     if (sdate != "sot" and edate == "present") :
         cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate])
     if (sdate != "sot" and edate != "present") :
-		cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate, edate])
+        cursor.execute('SELECT ticker, max(timestamp) FROM stocks WHERE %s < close AND close < %s AND timestamp >= %s AND timestamp <= %s GROUP BY ticker ORDER BY ticker', [low, high, sdate, edate])
     data = cursor.fetchall()
     # print the rows
 
@@ -610,7 +611,6 @@ def iextest():
     for row in reader:
         print row
 def main():
-    get_live("aapl");
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
@@ -661,6 +661,8 @@ def main():
             print "format error"
             exit(1)
         graph(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "live":
+        get_live(sys.argv[2])
     else:
         print "format error"
 
