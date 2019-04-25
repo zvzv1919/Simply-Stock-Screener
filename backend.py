@@ -202,6 +202,15 @@ def add_stock(row):
     conn.close();
     # return processed_text
 
+def add_stock_fin(row):
+    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    # print ("writing to db")
+    cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s,)", [row[0], row[1], row[2], row[3], row[4], row[5])
+    # print ("wrote to db")
+    conn.commit();
+    conn.close();
+    # return processed_text
 
 def get_stock(ticker):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
