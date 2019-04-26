@@ -23,9 +23,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->currentdatatable1->setItem(2,0, new QTableWidgetItem("Day Open:"));
     ui->currentdatatable1->setItem(3,0, new QTableWidgetItem("Day High:"));
     ui->currentdatatable1->setItem(4,0, new QTableWidgetItem("Volume:"));
+    ui->currentdatatable1->setItem(5,0, new QTableWidgetItem("Revenue:"));
+    ui->currentdatatable1->setItem(6,0, new QTableWidgetItem("Debt:"));
 
     ui->currentdatatable2->setItem(2,0, new QTableWidgetItem("Previous Close:"));
     ui->currentdatatable2->setItem(3,0, new QTableWidgetItem("Day Low:"));
+    ui->currentdatatable2->setItem(4,0, new QTableWidgetItem("Profit:"));
+    ui->currentdatatable2->setItem(5,0, new QTableWidgetItem("Income:"));
+    ui->currentdatatable2->setItem(6,0, new QTableWidgetItem("Cash:"));
+
 
     QStringList headerlist;
     headerlist << "Date" << "Price";
