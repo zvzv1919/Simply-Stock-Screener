@@ -9,6 +9,7 @@ import json
 import pymysql
 import requests
 import mysql.connector
+import mysql.connector.pooling
 import time
 import urllib
 
@@ -84,10 +85,11 @@ def update():
         try:
             data = (json.loads(dataRaw.text))["chart"]
         except:
-            print "err"
+            # print "err"
             continue
-        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
-                                               database='stock_info', auth_plugin='mysql_native_password')
+
+        conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                       database='stock_info', auth_plugin='mysql_native_password')
         cursor = conn.cursor()
         for item in data:
             try:
@@ -95,14 +97,22 @@ def update():
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
                 print vals
 
+
                 add_stock(vals, cursor)
 
-                print "after"
+                # print "after"
             except:
+                conn.close()
                 conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
                                                database='stock_info', auth_plugin='mysql_native_password')
-                cursor = conn.cursor()
-                #print ""
+
+                while conn==None:
+                    print "retry connection..."
+                    time.sleep(1)
+                    conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                                   database='stock_info', auth_plugin='mysql_native_password')
+
+                print "ao"
                 continue
         conn.commit()
         conn.close();
@@ -572,13 +582,15 @@ def gain_value(percentage, gt, sdate, edate):
                                    auth_plugin='mysql_native_password')
     cursorNew = connNew.cursor();
     if (edate == "present"):
+        # print ("here")
         cursorNew.execute(
-            'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-            '(select max(st.timestamp) from stocks st where s.ticker = st.ticker)')
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (edate != "present"):
         cursorNew.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker '
+            'FROM stocks WHERE `timestamp` < %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;', [edate])
+
     dataNew = cursorNew.fetchall()
     connNew.close()
 
@@ -588,12 +600,13 @@ def gain_value(percentage, gt, sdate, edate):
     cursorOld = connOld.cursor();
     if (sdate == "sot"):
         cursorOld.execute(
-           'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-           '(select min(st.timestamp) from stocks st where s.ticker = st.ticker)')
+           'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (sdate != "sot"):
         cursorOld.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+                'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker '
+                'FROM stocks WHERE `timestamp` > %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;',
+                [sdate])
            # 'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
     dataOld = cursorOld.fetchall()
     connOld.close()
