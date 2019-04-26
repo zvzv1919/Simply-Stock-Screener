@@ -575,14 +575,17 @@ def gain_value(percentage, gt, sdate, edate):
                                    auth_plugin='mysql_native_password')
     cursorNew = connNew.cursor();
     if (edate == "present"):
+        # print ("here")
         cursorNew.execute(
-            'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-            '(select max(st.timestamp) from stocks st where s.ticker = st.ticker)')
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (edate != "present"):
         cursorNew.execute(
             'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
             '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
     dataNew = cursorNew.fetchall()
+    for row in dataNew:
+        print row
     connNew.close()
 
     # print the rows
@@ -591,8 +594,8 @@ def gain_value(percentage, gt, sdate, edate):
     cursorOld = connOld.cursor();
     if (sdate == "sot"):
         cursorOld.execute(
-           'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-           '(select min(st.timestamp) from stocks st where s.ticker = st.ticker)')
+           'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (sdate != "sot"):
         cursorOld.execute(
             'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
