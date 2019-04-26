@@ -581,11 +581,10 @@ def gain_value(percentage, gt, sdate, edate):
         )
     if (edate != "present"):
         cursorNew.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker '
+            'FROM stocks WHERE `timestamp` < %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;', [edate])
+
     dataNew = cursorNew.fetchall()
-    for row in dataNew:
-        print row
     connNew.close()
 
     # print the rows
@@ -598,8 +597,9 @@ def gain_value(percentage, gt, sdate, edate):
         )
     if (sdate != "sot"):
         cursorOld.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+                'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker '
+                'FROM stocks WHERE `timestamp` > %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;',
+                [sdate])
            # 'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
     dataOld = cursorOld.fetchall()
     connOld.close()
