@@ -9,6 +9,7 @@ import json
 import pymysql
 import requests
 import mysql.connector
+import mysql.connector.pooling
 import time
 import urllib
 
@@ -84,10 +85,11 @@ def update():
         try:
             data = (json.loads(dataRaw.text))["chart"]
         except:
-            print "err"
+            # print "err"
             continue
-        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
-                                               database='stock_info', auth_plugin='mysql_native_password')
+
+        conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                       database='stock_info', auth_plugin='mysql_native_password')
         cursor = conn.cursor()
         for item in data:
             try:
@@ -95,14 +97,22 @@ def update():
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
                 print vals
 
+
                 add_stock(vals, cursor)
 
-                print "after"
+                # print "after"
             except:
+                conn.close()
                 conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
                                                database='stock_info', auth_plugin='mysql_native_password')
-                cursor = conn.cursor()
-                #print ""
+
+                while conn==None:
+                    print "retry connection..."
+                    time.sleep(1)
+                    conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                                   database='stock_info', auth_plugin='mysql_native_password')
+
+                print "ao"
                 continue
         conn.commit()
         conn.close();
@@ -116,10 +126,10 @@ def update():
             continue
         item = data[0]
         try:
-            vals = [symbol, item['grossProfit'], item['totalRevenue'], item['totalIncome'], item['totalDebt'], item['totalCash']]
+            vals = [symbol, item['grossProfit'], item['totalRevenue'], item['netIncome'], item['totalDebt'], item['totalCash']]
             add_stock_fin(vals)
         except:
-            print "err"
+            print "err2"
             continue
 
     # use iextest() as an example
@@ -239,9 +249,9 @@ def add_stock(row, cursor):
 def add_stock_fin(row):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    # print ("writing to db")
+    print ("writing to db")
     cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5]])
-    # print ("wrote to db")
+    print ("wrote to db")
     conn.commit();
     conn.close();
     # return processed_text
@@ -288,29 +298,24 @@ def singlestock(stock_symbol):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     # print (stock_symbol)
-    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s", [stock_symbol])
+    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
     # gets the number of rows affected by the command executed
+    #count = 0
     data = cursor.fetchall()
-    count = 0
     for row in data:
-        count += 1
-    if count == 0:
-        # add the stock to database
-        row_count=0
-        data = get_daily(stock_symbol)
-        reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            if row_count != 0:
-                row = [stock_symbol] + row
-                add_stock(row)
-            row_count += 1
-    #else:
-    data = get_current(stock_symbol)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        print row
-
-
+        print (row[0]),(row[1]),(row[2]),(row[5])
+   
+    print "stockdata"
+    cursor2 = conn.cursor()
+    cursor2.execute("SELECT * FROM stocks_fin WHERE name = %s", [stock_symbol])
+    
+    data = cursor2.fetchall()
+    for row in data:
+        print (row[1]),(row[2]),(row[3]),(row[4]),(row[5])
+    
+    conn.commit()
+    conn.close()
+        
     #     print "It Does Not Exist"
     # else:
     #     print "It Does Exist"
@@ -335,6 +340,8 @@ def singlestock(stock_symbol):
     #     for row in reader:
     #         print row
         # print current data - Xuan
+        
+    
 
 
 def extractDate(date, component):
@@ -755,6 +762,7 @@ def iextest():
     for row in reader:
         print row
 def main():
+
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
