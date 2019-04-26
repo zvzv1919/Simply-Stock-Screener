@@ -79,22 +79,48 @@ def update():
     # TODO: complete the testing and intraday data filling
     for symbol in company_list:
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
-        # print request
+        # Normal data
         dataRaw = requests.get(request)
         try:
             data = (json.loads(dataRaw.text))["chart"]
-        except ValueError:
+        except:
+            print "err"
             continue
+        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                               database='stock_info', auth_plugin='mysql_native_password')
+        cursor = conn.cursor()
         for item in data:
             try:
                 #print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
-                add_stock(vals)
-            except KeyError:
+                print vals
+
+                add_stock(vals, cursor)
+
+                print "after"
+            except:
+                conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                               database='stock_info', auth_plugin='mysql_native_password')
+                cursor = conn.cursor()
                 #print ""
                 continue
+        conn.commit()
+        conn.close();
 
-
+        # Financial data
+        dataRaw = get_financial(symbol)
+        try:
+            data = (json.loads(dataRaw.text))["financials"]
+        except:
+            print "err"
+            continue
+        item = data[0]
+        try:
+            vals = [symbol, item['grossProfit'], item['totalRevenue'], item['totalIncome'], item['totalDebt'], item['totalCash']]
+            add_stock_fin(vals)
+        except:
+            print "err"
+            continue
 
     # use iextest() as an example
     #time.sleep(5)
@@ -160,12 +186,13 @@ def get_realtime(stock_symbol):
                 conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
                 cursor = conn.cursor()
                 cursor.execute("DELETE from stocks TICKER = %s AND DATE = %s", stock_symbol, item['date'] )
+
+                add_stock(vals, cursor)
                 conn.commit();
                 conn.close();
-                add_stock(vals)
 
         sys.stdout.flush()
-        
+
         
 # Get stock info (current day)
 def get_current(stock_symbol):
@@ -191,22 +218,29 @@ def get_daily(stock_symbol):
     # update database with price for each day - Brian
     # call add_stock
 
+def get_financial(stock_symbol):
+    request = 'https://api.iextrading.com/1.0/stock/%s/financials' % stock_symbol
+    data = requests.get(request)
+    
+    return data
+    
+    
 
-def add_stock(row):
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
+def add_stock(row, cursor):
+    # conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    # cursor = conn.cursor()
     # print ("writing to db")
     cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]])
     # print ("wrote to db")
-    conn.commit();
-    conn.close();
+    # conn.commit();
+    # conn.close();
     # return processed_text
 
 def add_stock_fin(row):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     # print ("writing to db")
-    cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5])
+    cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5]])
     # print ("wrote to db")
     conn.commit();
     conn.close();
@@ -409,8 +443,90 @@ def graph(stock_symbol,  timeframe):
 
 def parse(query):
 
-    def judge(symbol):
-        return True
+    # a com b
+    def decor3(a, com, b):
+        def judge(row):
+            try:
+                operand1=float(a)
+            except ValueError:
+                try:
+                    operand1=row[a]
+                except:
+                    print "Invalid attribute name \"%s\"!" % a
+                    exit(1)
+            try:
+                operand2=float(b)
+            except ValueError:
+                try:
+                    operand2 = row[b]
+                except:
+                    print "Invalid attribute name \"%s\"!" % b
+                    exit(1)
+
+            if operand1 > operand2 and com=='>':
+                return True
+            elif operand1 < operand2 and com=='<':
+                return True
+            elif com =='>' or com == '<':
+                return False
+            else:
+                print "Invalid comparator \"%s\"!" % com
+                exit(1)
+        return judge
+
+    # a o(perator) b com(parator) c
+    def decor5(a, o, b, com, c):
+
+        def judge(row):
+            try:
+                operand1 = float(a)
+            except ValueError:
+                try:
+                    operand1 = row[a]
+                except:
+                    print "Invalid attribute name \"%s\"!" % a
+                    exit(1)
+            try:
+                operand2 = float(b)
+            except ValueError:
+                try:
+                    operand2 = row[b]
+                except:
+                    print "Invalid attribute name \"%s\"!" % b
+                    exit(1)
+            try:
+                operand3 = float(c)
+            except ValueError:
+                try:
+                    operand3 = row[c]
+                except:
+                    print "Invalid attribute name \"%s\"!" % c
+                    exit(1)
+
+            def operate(operand1, operator, operand2):
+                if operator=='+':
+                    return operand1 + operand2
+                if operator == '-':
+                    return operand1 - operand2
+                if operator=='*':
+                    return operand1 * operand2
+                if operator=='/':
+                    return operand1 / operand2
+                print "Invalid operator \"%s\"!" % operator
+                exit(1)
+
+            if operate(operand1, o, operand2) > operand3 and com == '>':
+                return True
+            elif com == '>' or com == '<':
+                return False
+            elif operand1 < operand2 and com == '<':
+                return True
+            else:
+                print "Invalid comparator \"%s\"!" % com
+                exit(1)
+        return judge
+
+
     tokens=query.split(' ')
     # print(tokens)
     if(tokens[0]=='GAIN'):
@@ -418,7 +534,12 @@ def parse(query):
     if(',' in tokens[0]):
         return 'PRICE'
     else:
-        return judge
+        if len(tokens)==3:
+            return decor3(tokens[0],tokens[1], tokens[2])
+        if len(tokens)==5:
+            return decor5(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4])
+        print "Wrong number of tokens in query"
+        exit(1)
 
 def gain_value(percentage, gt, sdate, edate):
     sdatevals = sdate.split('-')
@@ -518,14 +639,25 @@ def search(query, sdate, edate):
         tokens=query.split(' ')
         gain_value(tokens[2], tokens[1]=='>', sdate, edate)
         return
-    # TODO:Remove after sprint2
     if condition=="PRICE":
         # do nothing
         print("")
     #TODO:Implement in sprint 3
     else:
-        print("Unsupported query")
-        return
+        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test', database='stock_info',
+                                       auth_plugin='mysql_native_password')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * from stocks_fin")
+        data = cursor.fetchall()
+        # convert the dictionary of tuple into dictionary of dictionary MANUALLY
+        dataDict={}
+        for row in data:
+            dataDict[row[0]]={'profit': row[1], 'revenue': row[2], 'income': row[3], 'debt': row[4], 'cash': row[5]}
+        for row in dataDict:
+            if condition(dataDict[row]):
+                print row
+        # print("Unsupported query")
+        exit(0)
 
     #check for date validity
     sdatevals = sdate.split('-')
