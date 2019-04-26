@@ -86,17 +86,26 @@ def update():
             data = (json.loads(dataRaw.text))["chart"]
         except ValueError:
             continue
+        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                               database='stock_info', auth_plugin='mysql_native_password')
+        cursor = conn.cursor()
         for item in data:
             try:
                 #print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
                 print vals
-                add_stock(vals)
-                print "after"
 
+                add_stock(vals, cursor)
+
+                print "after"
             except:
+                conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                               database='stock_info', auth_plugin='mysql_native_password')
+                cursor = conn.cursor()
                 #print ""
                 continue
+        conn.commit()
+        conn.close();
 
 
 
@@ -197,14 +206,14 @@ def get_daily(stock_symbol):
     # call add_stock
 
 
-def add_stock(row):
-    conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
-    cursor = conn.cursor()
+def add_stock(row, cursor):
+    # conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
+    # cursor = conn.cursor()
     # print ("writing to db")
     cursor.execute("INSERT INTO stocks(ticker, timestamp, open, high, low, close, adjusted_close, volume, dividend_amount, split_coefficient) VALUES (%s,%s, %s, %s, %s, %s,%s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]])
     # print ("wrote to db")
-    conn.commit();
-    conn.close();
+    # conn.commit();
+    # conn.close();
     # return processed_text
 
 def add_stock_fin(row):
