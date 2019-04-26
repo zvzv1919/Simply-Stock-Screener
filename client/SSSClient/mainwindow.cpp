@@ -274,14 +274,18 @@ void MainWindow::search() {
         return;
     }
 
-    ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate);
-
     // Display results in list
-    QStringList searchlist = poutput.split("\r\n");
-    for(int i = 0; i < searchlist.length(); i++) {
-        ui->resultslist->addItem(searchlist[i]);
+    QStringList searchlist = poutput.split("\r\n", QString::SkipEmptyParts);
+    if((searchlist.length() == 1) && (!searchlist[0].isUpper())) {
+        ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate + " : " + searchlist[0]);
     }
+    else {
+        ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate);
 
+        for(int i = 0; i < searchlist.length(); i++) {
+            ui->resultslist->addItem(searchlist[i]);
+        }
+    }
 
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }
