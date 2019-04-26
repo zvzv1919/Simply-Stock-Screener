@@ -116,10 +116,10 @@ def update():
             continue
         item = data[0]
         try:
-            vals = [symbol, item['grossProfit'], item['totalRevenue'], item['totalIncome'], item['totalDebt'], item['totalCash']]
+            vals = [symbol, item['grossProfit'], item['totalRevenue'], item['netIncome'], item['totalDebt'], item['totalCash']]
             add_stock_fin(vals)
         except:
-            print "err"
+            print "err2"
             continue
 
     # use iextest() as an example
@@ -239,9 +239,9 @@ def add_stock(row, cursor):
 def add_stock_fin(row):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    # print ("writing to db")
+    print ("writing to db")
     cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5]])
-    # print ("wrote to db")
+    print ("wrote to db")
     conn.commit();
     conn.close();
     # return processed_text
@@ -295,6 +295,7 @@ def singlestock(stock_symbol):
     for row in data:
         print (row[0]),(row[1]),(row[2]),(row[5])
    
+    print "stockdata"
     cursor2 = conn.cursor()
     cursor2.execute("SELECT * FROM stocks_fin WHERE name = %s", [stock_symbol])
     
@@ -748,6 +749,7 @@ def iextest():
     for row in reader:
         print row
 def main():
+
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
