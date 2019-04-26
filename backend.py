@@ -290,12 +290,21 @@ def singlestock(stock_symbol):
     # print (stock_symbol)
     cursor.execute("SELECT * FROM Stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
     # gets the number of rows affected by the command executed
+    #count = 0
     data = cursor.fetchall()
-    count = 0
     for row in data:
         print (row[0]),(row[1]),(row[2]),(row[5])
-
-
+   
+    cursor2 = conn.cursor()
+    cursor2.execute("SELECT * FROM stocks_fin WHERE name = %s", [stock_symbol])
+    
+    data = cursor2.fetchall()
+    for row in data:
+        print (row[1]),(row[2]),(row[3]),(row[4]),(row[5])
+    
+    conn.commit()
+    conn.close()
+        
     #     print "It Does Not Exist"
     # else:
     #     print "It Does Exist"
@@ -320,6 +329,8 @@ def singlestock(stock_symbol):
     #     for row in reader:
     #         print row
         # print current data - Xuan
+        
+    
 
 
 def extractDate(date, component):
