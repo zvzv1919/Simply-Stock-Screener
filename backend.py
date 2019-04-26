@@ -9,6 +9,7 @@ import json
 import pymysql
 import requests
 import mysql.connector
+import mysql.connector.pooling
 import time
 import urllib
 
@@ -84,10 +85,11 @@ def update():
         try:
             data = (json.loads(dataRaw.text))["chart"]
         except:
-            print "err"
+            # print "err"
             continue
-        conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
-                                               database='stock_info', auth_plugin='mysql_native_password')
+
+        conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                       database='stock_info', auth_plugin='mysql_native_password')
         cursor = conn.cursor()
         for item in data:
             try:
@@ -95,14 +97,22 @@ def update():
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
                 print vals
 
+
                 add_stock(vals, cursor)
 
-                print "after"
+                # print "after"
             except:
+                conn.close()
                 conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
                                                database='stock_info', auth_plugin='mysql_native_password')
-                cursor = conn.cursor()
-                #print ""
+
+                while conn==None:
+                    print "retry connection..."
+                    time.sleep(1)
+                    conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
+                                                   database='stock_info', auth_plugin='mysql_native_password')
+
+                print "ao"
                 continue
         conn.commit()
         conn.close();
