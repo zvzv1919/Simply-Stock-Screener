@@ -79,22 +79,36 @@ def update():
     # TODO: complete the testing and intraday data filling
     for symbol in company_list:
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
-        # print request
+        # Normal data
         dataRaw = requests.get(request)
         try:
             data = (json.loads(dataRaw.text))["chart"]
         except ValueError:
             continue
+            print "err"
         for item in data:
             try:
                 #print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
                 vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
                 add_stock(vals)
             except KeyError:
-                #print ""
+                print "err"
                 continue
 
-
+        # Financial data
+        dataRaw = get_financial(symbol)
+        try:
+            data = (json.loads(dataRaw.text))["financials"]
+        except ValueError
+            continue
+            print "err"
+        for item in data:
+            try:
+                vals = [symbol, item['grossProfit'], item['totalRevenue'], item['totalIncome'], item['totalDebt'], item['totalCash']]
+                add_stock_fin(vals)
+            except KeyError:
+                print "err"
+                continue
 
     # use iextest() as an example
     #time.sleep(5)
@@ -191,6 +205,13 @@ def get_daily(stock_symbol):
     # update database with price for each day - Brian
     # call add_stock
 
+def get_financial(stock_symbol):
+    request = 'https://api.iextrading.com/1.0/stock/%s/financials' % stock_symbol
+    data = requests.get(request)
+    
+    return data
+    
+    
 
 def add_stock(row):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
