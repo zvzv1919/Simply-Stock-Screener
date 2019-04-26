@@ -288,7 +288,7 @@ def singlestock(stock_symbol):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     # print (stock_symbol)
-    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
+    cursor.execute("SELECT * FROM stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
     # gets the number of rows affected by the command executed
     #count = 0
     data = cursor.fetchall()
