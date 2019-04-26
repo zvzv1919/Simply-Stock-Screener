@@ -288,27 +288,12 @@ def singlestock(stock_symbol):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     # print (stock_symbol)
-    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s", [stock_symbol])
+    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
     # gets the number of rows affected by the command executed
     data = cursor.fetchall()
     count = 0
     for row in data:
-        count += 1
-    if count == 0:
-        # add the stock to database
-        row_count=0
-        data = get_daily(stock_symbol)
-        reader = csv.reader(data.text.splitlines())
-        for row in reader:
-            if row_count != 0:
-                row = [stock_symbol] + row
-                add_stock(row)
-            row_count += 1
-    #else:
-    data = get_current(stock_symbol)
-    reader = csv.reader(data.text.splitlines())
-    for row in reader:
-        print row
+        print (row[0]),(row[1]),(row[2]),(row[5])
 
 
     #     print "It Does Not Exist"
