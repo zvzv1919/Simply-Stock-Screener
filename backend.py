@@ -81,11 +81,11 @@ def update():
     for symbol in company_list:
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
         # Normal data
-        dataRaw = requests.get(request)
         try:
+            dataRaw = requests.get(request)
             data = (json.loads(dataRaw.text))["chart"]
         except:
-            # print "err"
+            print "error loading stock data for %s - skipping" % symbol
             continue
 
         conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
@@ -118,11 +118,11 @@ def update():
         conn.close();
 
         # Financial data
-        dataRaw = get_financial(symbol)
         try:
+            dataRaw = get_financial(symbol)
             data = (json.loads(dataRaw.text))["financials"]
         except:
-            print "err"
+            print "error loading financial data for %s - skipping" % symbol
             continue
         item = data[0]
         try:
