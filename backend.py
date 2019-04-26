@@ -64,7 +64,170 @@ import urllib
 # a list holding all company symbols
 company_list=[]
 now=datetime.datetime.now()
-# update the database
+
+# Helper function cause I don't like rewriting code!
+def batch_request(symbollist, symbolstring):
+    # Normal data
+    request = "https://api.iextrading.com/1.0/stock/market/batch?types=chart&symbols=%s&range=5y&chartLast=10" % symbolstring
+    try:
+        dataRaw = requests.get(request)
+    except:
+        print "error with stock request for %s - skipping" % symbolstring
+        return
+    
+    conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                       database='stock_info', auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    
+    for symbol in symbollist:
+        try:
+            data = (json.loads(dataRaw.text))[symbol]['chart']
+        except:
+            print "unable to format stock data for %s - skipping" % symbol
+            continue
+        
+        for item in data:
+            ret = 0
+            while True:
+                try:
+                    vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
+                    add_stock(vals, cursor)
+                except:
+                    conn.close()
+                    #time.sleep(.5)  # Increasing this value will make the database update take longer, but will make it more complete
+                    conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                                   database='stock_info', auth_plugin='mysql_native_password')
+
+                    while conn==None:
+                        print "retry connection..."
+                        time.sleep(1)
+                        conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                                       database='stock_info', auth_plugin='mysql_native_password')
+
+                    if ret == 0:
+                        #print "Database connection issue.  Giving up trying to add stock entry for symbol %s" % symbol
+                        break
+                    else:
+                        ret = ret - 1
+                        continue
+                break
+    
+    conn.commit()
+    conn.close();
+    
+    # Financial data
+    request = "https://api.iextrading.com/1.0/stock/market/batch?types=financials&symbols=%s&period=quarterly" % symbolstring
+    try:
+        dataRaw = requests.get(request)
+    except:
+        print "error with financial request for %s - skipping" % symbolstring
+        return
+    
+    conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                       database='stock_info', auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    
+    for symbol in symbollist:
+        try:
+            data = (json.loads(dataRaw.text))[symbol]['financials']['financials']
+            #print data
+        except:
+            #print "unable to format financial data for %s - skipping" % symbol
+            continue
+        
+        item = data[0]
+        ret = 0
+        while True:
+            try:
+                vals = [symbol, item['grossProfit'], item['totalRevenue'], item['netIncome'], item['totalDebt'], item['totalCash']]
+                add_stock_fin_cursor(vals, cursor)
+            except:
+                conn.close()
+                #time.sleep(.5)  # Increasing this value will make the database update take longer, but will make it more complete
+                conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                               database='stock_info', auth_plugin='mysql_native_password')
+
+                while conn==None:
+                    print "retry connection..."
+                    time.sleep(1)
+                    conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
+                                                   database='stock_info', auth_plugin='mysql_native_password')
+
+                if ret == 0:
+                    #print "Database connection issue.  Giving up trying to add financial entry for symbol %s" % symbol
+                    break
+                else:
+                    ret = ret - 1
+                    continue
+            break     
+    
+    conn.commit()
+    conn.close();
+            
+
+# update the database - now with 100% more batching!
+def update_batch():
+
+    with open('companylist.csv') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            else:
+                # print row[0]
+                company_list.append(row[0])
+                line_count += 1
+    
+    numtickers = len(company_list)
+    
+    if numtickers == 0:
+        print "company list is empty"
+        return
+    else:
+        print "Starting update of %s tickers" % str(numtickers)
+        
+    starttime = datetime.datetime.now()
+    
+    symbolcnt = 0
+    symbolstring = ""
+    symbollist = []
+    remaining = numtickers
+    
+    for symbol in company_list:
+        if symbolcnt == 100:
+            # Send off request with existing list
+            batch_request(symbollist, symbolstring)
+            remaining = remaining - 100
+            print "Updated 100 symbols.  %d remaining" % remaining
+            sys.stdout.flush()
+            #print symbollist
+            symbolcnt = 0
+            
+        if symbolcnt == 0:
+            symbolstring = symbol
+            symbollist = [symbol]
+        else:
+            symbolstring = symbolstring + "," + symbol
+            symbollist.append(symbol)
+            
+        symbolcnt = symbolcnt + 1
+    
+    # Send off request with remaining list
+    batch_request(symbollist, symbolstring)
+    print "Updated %d symbols.  0 remaining" % remaining
+    #print symbollist
+    
+    endtime = datetime.datetime.now()
+    
+    timediff = endtime - starttime
+    (mins, secs) = divmod(timediff.days * 86400 + timediff.seconds, 60)
+    
+    print "Finished updating %d tickers" % numtickers
+    print "Elapsed time: %d minutes and %d seconds" % (mins, secs)
+
+
+# update the database          
 def update():
     with open('companylist.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -77,6 +240,9 @@ def update():
                 company_list.append(row[0])
                 line_count += 1
    # print company_list
+    
+    starttime = datetime.datetime.now()
+   
     # TODO: complete the testing and intraday data filling
     for symbol in company_list:
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
@@ -131,6 +297,14 @@ def update():
         except:
             print "err2"
             continue
+            
+            
+    endtime = datetime.datetime.now()
+    
+    timediff = endtime - starttime
+    (mins, secs) = divmod(timediff.days * 86400 + timediff.seconds, 60)
+    
+    print "Elapsed time: %d minutes and %d seconds" % (mins, secs)
 
     # use iextest() as an example
     #time.sleep(5)
@@ -247,6 +421,7 @@ def add_stock(row, cursor):
     # return processed_text
 
 def add_stock_fin(row):
+    
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     print ("writing to db")
@@ -255,6 +430,9 @@ def add_stock_fin(row):
     conn.commit();
     conn.close();
     # return processed_text
+    
+def add_stock_fin_cursor(row, cursor):
+    cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5]])
 
 def get_stock(ticker):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
@@ -763,6 +941,7 @@ def iextest():
         print row
 def main():
 
+    #update_batch()
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
@@ -794,7 +973,7 @@ def main():
     # control statement
     if len(sys.argv) < 3:
         if (len(sys.argv) == 2) and (sys.argv[1] == "update"):
-            update()
+            update_batch()
             return
         else:
             print "format error"
