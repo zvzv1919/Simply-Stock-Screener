@@ -129,28 +129,70 @@ void MainWindow::viewStockDetails(QListWidgetItem * stock) {
 
     qDebug() << poutput;
 
-    if(poutput.compare("") == 0) {
+    if(poutput.compare("stockdata\r\n") == 0) {
         ui->stockname->setText(stockstring.append(" - Stock not found"));
         ui->pageswitcher->setCurrentWidget(ui->singleview);
         return;
     }
-    int ind = poutput.indexOf('[');
-    ind = poutput.indexOf('[', ind+1);
-    poutput = poutput.mid(ind+1, poutput.length() - ind - 1 - 3);
-    poutput = poutput.remove('\'');
-    QStringList datalist = poutput.split(", ");
-    ui->currentdatatable1->setItem(0,1, new QTableWidgetItem(/*datalist[4]*/ "Awaiting Realtime Data"));
 
-    ui->currentdatatable2->setItem(0,1, new QTableWidgetItem(/*datalist[8] + " (" + datalist[9] + ")"*/  "Awaiting Realtime Data"));
+    ui->currentdatatable1->setItem(0,1, new QTableWidgetItem("Awaiting Realtime Data"));
+    ui->currentdatatable2->setItem(0,1, new QTableWidgetItem("Awaiting Realtime Data"));
 
-    ui->currentdatatable1->setItem(2,1, new QTableWidgetItem(datalist[1]));
-    ui->currentdatatable1->setItem(3,1, new QTableWidgetItem(/*datalist[2]*/  "Awaiting Realtime Data"));
-    ui->currentdatatable1->setItem(4,1, new QTableWidgetItem(/*datalist[5]*/  "Awaiting Realtime Data"));
+    ui->currentdatatable1->setItem(3,1, new QTableWidgetItem("Awaiting Realtime Data"));
+    ui->currentdatatable1->setItem(4,1, new QTableWidgetItem("Awaiting Realtime Data"));
 
-    ui->currentdatatable2->setItem(2,1, new QTableWidgetItem(datalist[7]));
-    ui->currentdatatable2->setItem(3,1, new QTableWidgetItem(/*datalist[3]*/  "Awaiting Realtime Data"));
+    ui->currentdatatable2->setItem(3,1, new QTableWidgetItem("Awaiting Realtime Data"));
 
-    ui->stockname->setText(stockstring + " - " + datalist[6]);
+    QStringList poutlist = poutput.split("\r\n", QString::SkipEmptyParts);
+
+    boolean speccheck = false;
+
+    if(poutlist.length() < 3) {
+        speccheck = true;
+    }
+
+    QStringList datalist1 = poutlist[0].split(' ');
+    qDebug() << poutlist[0];
+    QStringList datalist2;
+
+    if(speccheck) {
+        qDebug() << poutlist[1];
+        datalist2 = poutlist[1].split(' ');
+    }
+    else {
+        qDebug() << poutlist[2];
+        datalist2 = poutlist[2].split(' ');
+    }
+
+    if(datalist1.length() == 1) {
+        ui->stockname->setText(stockstring + " - Unable to retrieve");
+
+        ui->currentdatatable1->setItem(2,1, new QTableWidgetItem("Unable to retrieve"));
+        ui->currentdatatable2->setItem(2,1, new QTableWidgetItem("Unable to retrieve"));
+    }
+    else {
+        ui->stockname->setText(stockstring + " - " + datalist1[1]);
+
+        ui->currentdatatable1->setItem(2,1, new QTableWidgetItem(datalist1[2]));
+        ui->currentdatatable2->setItem(2,1, new QTableWidgetItem(datalist1[3]));
+    }
+
+    if(datalist2.length() == 1) {
+        ui->currentdatatable1->setItem(5,1, new QTableWidgetItem("Unable to retrieve"));
+        ui->currentdatatable1->setItem(6,1, new QTableWidgetItem("Unable to retrieve"));
+
+        ui->currentdatatable2->setItem(4,1, new QTableWidgetItem("Unable to retrieve"));
+        ui->currentdatatable2->setItem(5,1, new QTableWidgetItem("Unable to retrieve"));
+        ui->currentdatatable2->setItem(6,1, new QTableWidgetItem("Unable to retrieve"));
+    }
+    else {
+        ui->currentdatatable1->setItem(5,1, new QTableWidgetItem(datalist2[1]));
+        ui->currentdatatable1->setItem(6,1, new QTableWidgetItem(datalist2[3]));
+
+        ui->currentdatatable2->setItem(4,1, new QTableWidgetItem(datalist2[0]));
+        ui->currentdatatable2->setItem(5,1, new QTableWidgetItem(datalist2[2]));
+        ui->currentdatatable2->setItem(6,1, new QTableWidgetItem(datalist2[4]));
+    }
 
     // Start the realtime data process
     realtimeprocess = new QProcess(this);
@@ -232,14 +274,18 @@ void MainWindow::search() {
         return;
     }
 
-    ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate);
-
     // Display results in list
-    QStringList searchlist = poutput.split("\r\n");
-    for(int i = 0; i < searchlist.length(); i++) {
-        ui->resultslist->addItem(searchlist[i]);
+    QStringList searchlist = poutput.split("\r\n", QString::SkipEmptyParts);
+    if((searchlist.length() == 1) && (!searchlist[0].isUpper())) {
+        ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate + " : " + searchlist[0]);
     }
+    else {
+        ui->searchresults->setText("Search Results for: " + query + " from " + sdate + " to " + edate);
 
+        for(int i = 0; i < searchlist.length(); i++) {
+            ui->resultslist->addItem(searchlist[i]);
+        }
+    }
 
     ui->pageswitcher->setCurrentWidget(ui->listview);
 }

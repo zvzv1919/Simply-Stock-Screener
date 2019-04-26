@@ -81,11 +81,11 @@ def update():
     for symbol in company_list:
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
         # Normal data
-        dataRaw = requests.get(request)
         try:
+            dataRaw = requests.get(request)
             data = (json.loads(dataRaw.text))["chart"]
         except:
-            # print "err"
+            print "error loading stock data for %s - skipping" % symbol
             continue
 
         conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
@@ -118,11 +118,11 @@ def update():
         conn.close();
 
         # Financial data
-        dataRaw = get_financial(symbol)
         try:
+            dataRaw = get_financial(symbol)
             data = (json.loads(dataRaw.text))["financials"]
         except:
-            print "err"
+            print "error loading financial data for %s - skipping" % symbol
             continue
         item = data[0]
         try:
@@ -298,7 +298,7 @@ def singlestock(stock_symbol):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     # print (stock_symbol)
-    cursor.execute("SELECT * FROM Stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
+    cursor.execute("SELECT * FROM stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [stock_symbol])
     # gets the number of rows affected by the command executed
     #count = 0
     data = cursor.fetchall()
@@ -585,13 +585,15 @@ def gain_value(percentage, gt, sdate, edate):
                                    auth_plugin='mysql_native_password')
     cursorNew = connNew.cursor();
     if (edate == "present"):
+        # print ("here")
         cursorNew.execute(
-            'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-            '(select max(st.timestamp) from stocks st where s.ticker = st.ticker)')
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (edate != "present"):
         cursorNew.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+            'SELECT * FROM stocks A INNER JOIN (SELECT max(timestamp) mv, ticker '
+            'FROM stocks WHERE `timestamp` < %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;', [edate])
+
     dataNew = cursorNew.fetchall()
     connNew.close()
 
@@ -601,12 +603,13 @@ def gain_value(percentage, gt, sdate, edate):
     cursorOld = connOld.cursor();
     if (sdate == "sot"):
         cursorOld.execute(
-           'select s.ticker, s.timestamp, s.close from stocks s where s.timestamp = '
-           '(select min(st.timestamp) from stocks st where s.ticker = st.ticker)')
+           'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker FROM stocks GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;'
+        )
     if (sdate != "sot"):
         cursorOld.execute(
-            'SELECT s.ticker, s.timestamp, s.close FROM stocks s AS a RIGHT JOINWHERE s.timestamp = '
-            '(SELECT min(st.timestamp) FROM stocks st WHERE s.ticker = st.ticker AND st.timestamp >= %s)', [sdate])
+                'SELECT * FROM stocks A INNER JOIN (SELECT min(timestamp) mv, ticker '
+                'FROM stocks WHERE `timestamp` > %s GROUP BY ticker) B on A.ticker= B.ticker and A.timestamp = B.MV;',
+                [sdate])
            # 'SELECT ticker, min(timestamp), close FROM stocks WHERE timestamp >= %s GROUP BY ticker ORDER BY ticker', [sdate])
     dataOld = cursorOld.fetchall()
     connOld.close()
