@@ -12,6 +12,7 @@ import mysql.connector
 import mysql.connector.pooling
 import time
 import urllib
+import datetime
 
 # buffer = StringIO()
 # c = pycurl.Curl()
@@ -79,6 +80,7 @@ def update():
    # print company_list
     # TODO: complete the testing and intraday data filling
     for symbol in company_list:
+
         request = 'https://api.iextrading.com/1.0/stock/%s/batch?types=chart&range=5y&chartLast=10' % symbol
         # Normal data
         try:
@@ -91,16 +93,30 @@ def update():
         conn = mysql.connector.connect(pool_size=5, host='162.221.219.6', user='test', password='cs407test',
                                        database='stock_info', auth_plugin='mysql_native_password')
         cursor = conn.cursor()
-        for item in data:
+        cursor.execute("SELECT * FROM stocks WHERE ticker = %s ORDER BY timestamp DESC LIMIT 1", [symbol])
+        data2 = cursor.fetchall() 
+        done = 0
+        date = 0
+        for row in data2:
+            date = row[1]
+            #print date
+        for item in reversed(data):
             try:
-                #print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
-                vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
-                print vals
-
-
-                add_stock(vals, cursor)
-
-                # print "after"
+                if done == 0:
+                    print symbol, item['date'], item['open'], item['high'], item['low'], item['close']
+                    vals = [symbol, item['date'], item['open'], item['high'], item['low'], item['close'], item['close'], item['volume'], 0 , 1 ]
+                    #print date
+                    #print item['date']
+                    data2 = item['date'].split("-")
+                    
+                    #print (data2[0]),(data2[1]),(data2[2]),
+                    #print (date.year),(date.month),(date.day)
+                    if (date.year < data2[0]) or (date.year == data2[0] and date.month < data2[1]) or (date.year == data2[0] and date.month == (data2[1]) and date.day < data2[2]):
+                        done = 1
+                        print "not adding"
+                    else:
+                        print "adding"
+                        #add_stock(vals, cursor)  
             except:
                 conn.close()
                 conn = mysql.connector.connect(host='162.221.219.6', user='test', password='cs407test',
@@ -249,9 +265,9 @@ def add_stock(row, cursor):
 def add_stock_fin(row):
     conn = mysql.connector.connect(host = '162.221.219.6', user = 'test', password ='cs407test', database = 'stock_info',auth_plugin='mysql_native_password')
     cursor = conn.cursor()
-    print ("writing to db")
+    #print ("writing to db")
     cursor.execute("INSERT INTO stocks_fin(name, profit, revenue, income, debt, cash) VALUES (%s,%s, %s, %s, %s, %s)", [row[0], row[1], row[2], row[3], row[4], row[5]])
-    print ("wrote to db")
+    #print ("wrote to db")
     conn.commit();
     conn.close();
     # return processed_text
@@ -765,7 +781,8 @@ def iextest():
     for row in reader:
         print row
 def main():
-
+    #singlestock("AAL")
+    #update()
     #search_timeframe('2008-02-21','2019-02-21','35.00','39.00');
     #search('35.00,39.00','2008-02-21','2019-02-21');
     """prefix='https://api.iextrading.com/1.0'
@@ -777,7 +794,7 @@ def main():
         print row
     """
     #test driver
-    #singlestock("AAL")
+    
     #print extractDate("1234-56-78", "DAY")
     #graph("AAL", "1 month")
 
