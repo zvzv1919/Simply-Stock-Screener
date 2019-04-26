@@ -510,6 +510,9 @@ def parse(query):
                     print "Invalid attribute name \"%s\"!" % c
                     exit(1)
 
+            if operand1==None or operand2==None or operand3==None:
+                return False
+
             def operate(operand1, operator, operand2):
                 if operator=='+':
                     return operand1 + operand2
